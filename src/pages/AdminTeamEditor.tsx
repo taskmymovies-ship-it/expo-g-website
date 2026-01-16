@@ -19,12 +19,23 @@ const AdminTeamEditor = () => {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const getAuthHeaders = () => {
+  const token = localStorage.getItem("admin_access_token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+  
 
   const load = async () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${base}/teams`);
+      const res = await fetch(`${base}/teams`, {
+        headers: {
+          ...getAuthHeaders(),
+        },
+    });
+
       if (!res.ok) throw new Error("Failed to load team");
       const payload = (await res.json()) as TeamData;
       setData({
@@ -55,11 +66,15 @@ const AdminTeamEditor = () => {
     try {
       const res = await fetch(`${base}/teams`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
         body: JSON.stringify(data),
-        credentials: "include",
       });
+
       if (!res.ok) throw new Error("Failed to save team");
+
       setSuccess("Team updated");
     } catch (err: any) {
       setError(err.message || "Unable to save team");
@@ -68,6 +83,7 @@ const AdminTeamEditor = () => {
     }
   };
 
+
   const restore = async () => {
     setSaving(true);
     setError("");
@@ -75,9 +91,13 @@ const AdminTeamEditor = () => {
     try {
       const res = await fetch(`${base}/teams/restore`, {
         method: "POST",
-        credentials: "include",
+        headers: {
+          ...getAuthHeaders(),
+        },
       });
+
       if (!res.ok) throw new Error("Restore failed");
+
       const payload = await res.json();
       setData({
         eyebrow: payload.eyebrow || "",
@@ -87,6 +107,7 @@ const AdminTeamEditor = () => {
         ctaHref: payload.ctaHref || "/teams",
         team: payload.team || [],
       });
+
       setSuccess("Defaults restored");
     } catch (err: any) {
       setError(err.message || "Unable to restore defaults");
