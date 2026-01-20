@@ -3,6 +3,7 @@ import { FastifyInstance } from "fastify";
 import { getDb } from "../../db/mongo";
 import { getRedis } from "../../db/redis";
 import { DateTime } from "luxon";
+import profileConfigRoutes from "../profile-config/routes";
 
 export default async function analyticsRoutes(app: FastifyInstance) {
   app.get(
@@ -60,16 +61,16 @@ export default async function analyticsRoutes(app: FastifyInstance) {
         .toArray();
 
       return {
-        totalItems,
-        totalLikes,
-        totalComments,
-        byCategory,
-        byYear,
-        topTags,
-      };
+       totalItems,
+       likes: totalLikes,
+       comments: totalComments,
+       byCategory,
+       byYear,
+       topTags,
+     };
     }
   );
-
+  
   app.get(
     "/admin/analytics/gallery-engagement",
     { preHandler: [app.authenticate] },
@@ -154,7 +155,7 @@ export default async function analyticsRoutes(app: FastifyInstance) {
             { $sort: { date: 1 } },
           ])
           .toArray();
-        return { kind, data };
+        return { kind, points: data };
       }
 
       if (kind === "comments") {
@@ -175,7 +176,7 @@ export default async function analyticsRoutes(app: FastifyInstance) {
             { $sort: { date: 1 } },
           ])
           .toArray();
-        return { kind, data };
+       return { kind, points: data };
       }
 
       return reply.code(400).send({ message: "Unsupported kind" });
