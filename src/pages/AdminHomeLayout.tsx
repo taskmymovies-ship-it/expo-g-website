@@ -14,6 +14,19 @@ const AdminHomeLayout = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  type NoticeType = "success" | "error";
+
+const [notice, setNotice] = useState<{
+  type: NoticeType;
+  message: string;
+} | null>(null);
+
+const showNotice = (type: NoticeType, message: string) => {
+  setNotice({ type, message });
+  setTimeout(() => setNotice(null), 3000);
+};
+
+
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem("admin_refresh_token");
     if (!refreshToken) return null;
@@ -62,38 +75,53 @@ const AdminHomeLayout = () => {
   }, []);
 
   const save = async () => {
-    setSaving(true);
-    try {
-      const token = await getAccessToken();
-      if (!token) throw new Error("Not authenticated");
-      await fetch(`${base}/home-layout`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ sections }),
-      });
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  };
+  setSaving(true);
+  try {
+    const token = await getAccessToken();
+    if (!token) throw new Error("Not authenticated");
 
-  const restore = async () => {
-    setSaving(true);
-    try {
-      const token = await getAccessToken();
-      if (!token) throw new Error("Not authenticated");
-      await fetch(`${base}/home-layout/restore`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      await load();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  };
+    const res = await fetch(`${base}/home-layout`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ sections }),
+    });
+
+    if (!res.ok) throw new Error("Save failed");
+
+    showNotice("success", "Saved successfully");
+  } catch (err) {
+    console.error(err);
+    showNotice("error", "Save failed");
+  } finally {
+    setSaving(false);
+  }
+};
+
+ const restore = async () => {
+  setSaving(true);
+  try {
+    const token = await getAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    const res = await fetch(`${base}/home-layout/restore`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) throw new Error("Restore failed");
+
+    await load();
+    showNotice("success", "Restored successfully");
+  } catch (err) {
+    console.error(err);
+    showNotice("error", "Restore failed");
+  } finally {
+    setSaving(false);
+  }
+};
 
   const move = (index: number, dir: -1 | 1) => {
     const target = index + dir;
@@ -118,6 +146,22 @@ const AdminHomeLayout = () => {
       navItems={adminNavLinks}
       sections={[{ id: "layout", label: "Layout" }]}
     >
+    {notice && (
+  <div
+    className={`mb-6 rounded-lg px-4 py-3 text-sm flex items-center gap-2
+      ${
+        notice.type === "success"
+          ? "bg-blue-50 text-blue-700"
+          : "bg-red-50 text-red-700"
+      }`}
+  >
+    <span className="font-medium">
+      {notice.type === "success" ? "✓" : "⚠"}
+    </span>
+    {notice.message}
+  </div>
+)}
+
       <Card id="layout" className="bg-card/70 border-border/60">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>

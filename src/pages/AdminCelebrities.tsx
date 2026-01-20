@@ -18,6 +18,19 @@ const AdminCelebrities = () => {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  type NoticeType = "success" | "error";
+
+const [notice, setNotice] = useState<{
+  type: NoticeType;
+  message: string;
+} | null>(null);
+
+const showNotice = (type: NoticeType, message: string) => {
+  setNotice({ type, message });
+  setTimeout(() => setNotice(null), 3000);
+};
+
+
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem("admin_refresh_token");
     if (!refreshToken) return null;
@@ -65,48 +78,61 @@ const AdminCelebrities = () => {
   }, []);
 
   const save = async () => {
-    setSaving(true);
-    try {
-      const token = await getAccessToken();
-      if (!token) throw new Error("Not authenticated");
-      const attempt = async (authToken: string | null) =>
-        fetch(`${base}/celebrities`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-          },
-          body: JSON.stringify(data),
-        });
-      let res = await attempt(token);
-      if (res && res.status === 401) {
-        const refreshed = await refreshAccessToken();
-        res = await attempt(refreshed);
-      }
-      if (!res || !res.ok) throw new Error("Save failed");
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
+  setSaving(true);
+  try {
+    const token = await getAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    const attempt = async (authToken: string | null) =>
+      fetch(`${base}/celebrities`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+        },
+        body: JSON.stringify(data),
+      });
+
+    let res = await attempt(token);
+
+    if (res && res.status === 401) {
+      const refreshed = await refreshAccessToken();
+      res = await attempt(refreshed);
     }
-  };
+
+    if (!res || !res.ok) throw new Error("Save failed");
+
+    showNotice("success", "Saved successfully");
+  } catch (err) {
+    console.error(err);
+    showNotice("error", "Save failed");
+  } finally {
+    setSaving(false);
+  }
+};
 
   const restore = async () => {
-    setSaving(true);
-    try {
-      const token = await getAccessToken();
-      if (!token) throw new Error("Not authenticated");
-      await fetch(`${base}/celebrities/restore`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      await load();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  };
+  setSaving(true);
+  try {
+    const token = await getAccessToken();
+    if (!token) throw new Error("Not authenticated");
+
+    const res = await fetch(`${base}/celebrities/restore`, {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!res.ok) throw new Error("Restore failed");
+
+    await load();
+    showNotice("success", "Restored successfully");
+  } catch (err) {
+    console.error(err);
+    showNotice("error", "Restore failed");
+  } finally {
+    setSaving(false);
+  }
+};
 
   return (
     <AdminLayout
@@ -115,6 +141,22 @@ const AdminCelebrities = () => {
       navItems={adminNavLinks}
       sections={[{ id: "celebs", label: "Celebrities" }]}
     >
+      {notice && (
+  <div
+    className={`mb-6 rounded-lg px-4 py-3 text-sm flex items-center gap-2
+      ${
+        notice.type === "success"
+          ? "bg-blue-50 text-blue-700"
+          : "bg-red-50 text-red-700"
+      }`}
+  >
+    <span className="font-medium">
+      {notice.type === "success" ? "✓" : "⚠"}
+    </span>
+    {notice.message}
+  </div>
+)}
+
       <CelebEditor data={data} onChange={setData} onAdd={() => setData({ ...data, celebrities: [...(data.celebrities || []), { name: "", title: "", quote: "", image: "", badge: "", href: "" }] })} onRemove={(idx) => setData({ ...data, celebrities: (data.celebrities || []).filter((_, i) => i !== idx) })} onSave={save} onRestore={restore} saving={saving} loading={loading} />
     </AdminLayout>
   );

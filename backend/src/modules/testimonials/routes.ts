@@ -33,17 +33,22 @@ const payloadSchema = z.object({
       title: z.string().default("Testimonials"),
       intro: z
         .string()
-        .default("What our partners, founders, and attendees say about INDIA GLOBAL EXPO. Animated stories from the floor to the main stage."),
+        .default(
+          "What our partners, founders, and attendees say about INDIA GLOBAL EXPO. Animated stories from the floor to the main stage."
+        ),
       ctaLabel: z.string().default("Send feedback"),
       ctaHref: z.string().default("/feedback"),
       ctaBadge: z.string().default("Share yours"),
       ctaTitle: z.string().default("Were you at the expo?"),
       ctaBody: z
         .string()
-        .default("Tell us what you loved, what you’d improve, and what you want to see next year. Your feedback shapes the next edition."),
+        .default(
+          "Tell us what you loved, what you’d improve, and what you want to see next year. Your feedback shapes the next edition."
+        ),
     })
     .default({}),
-  testimonials: z.array(testimonialSchema),
+
+  testimonials: z.array(testimonialSchema).default([]),
 });
 
 const listQuerySchema = z.object({
@@ -136,6 +141,26 @@ export default async function testimonialsRoutes(app: FastifyInstance) {
       return parsed.data;
     }
   );
+
+  app.post(
+  "/testimonials/restore",
+  { preHandler: [app.authenticate] },
+  async (request, reply) => {
+    const db = await getDb();
+    const col = db.collection("testimonials");
+
+    const defaults = payloadSchema.parse({});
+
+    await col.updateOne(
+      { key: "default" },
+      { $set: { key: "default", ...defaults } },
+      { upsert: true }
+    );
+
+    request.log.info("testimonials.restore success");
+    return defaults;
+  }
+);
 
   app.delete(
     "/testimonials/:id",
