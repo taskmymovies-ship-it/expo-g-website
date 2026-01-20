@@ -41,9 +41,10 @@ const failures: Seed[] = [];
 for (const seed of seeds) {
   console.log(`\n▶️  Seeding ${seed.label} (${seed.file})`);
   const result = spawnSync(tsxBin, [seed.file], {
-    stdio: "inherit",
-    cwd: path.resolve(__dirname, ".."),
-    env: process.env,
+  stdio: "inherit",
+  cwd: path.resolve(__dirname, ".."),
+  env: process.env,
+  shell: process.platform === "win32", 
   });
   if (result.status !== 0) {
     failures.push(seed);
