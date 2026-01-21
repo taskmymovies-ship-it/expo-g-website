@@ -7,7 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { prefillFormValues, useProfilePrefill } from "@/hooks/useProfilePrefill";
+import {
+  prefillFormValues,
+  useProfilePrefill,
+} from "@/hooks/useProfilePrefill";
 
 type Field = {
   id: string;
@@ -46,13 +49,15 @@ const defaultPayload: PartnerPayload = {
     emailLabel: "Email",
     companyLabel: "Company",
     goalsLabel: "Goals & vision",
-    goalsPlaceholder: "What do you want to showcase? What does success look like?",
+    goalsPlaceholder:
+      "What do you want to showcase? What does success look like?",
     namePlaceholder: "Your name",
     companyPlaceholder: "Brand or organization",
     emailPlaceholder: "you@company.com",
     ctaLabel: "Submit",
     note: "We reply within 1–2 business days.",
-    successMessage: "Thanks for your interest in partnering. We'll reach out soon.",
+    successMessage:
+      "Thanks for your interest in partnering. We'll reach out soon.",
   },
 };
 
@@ -70,11 +75,20 @@ const Partner = () => {
   const { profile } = useProfilePrefill();
 
   const handleChange =
-    (key: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+    (key: string) =>
+    (
+      e: React.ChangeEvent<
+        HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      >,
+    ) =>
       setForm((prev) => ({ ...prev, [key]: e.target.value }));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!form.company || !form.company.trim()) {
+      alert("Company name is required");
+      return;
+    }
     try {
       const res = await fetch(`${base}/forms/partner/submit`, {
         method: "POST",
@@ -83,9 +97,13 @@ const Partner = () => {
       });
       if (!res.ok) throw new Error("Submit failed");
       setForm({});
-      navigate("/submit-success", { state: { message: content.form.successMessage } });
+      navigate("/submit-success", {
+        state: { message: content.form.successMessage },
+      });
     } catch {
-      navigate("/submit-error", { state: { message: "Unable to send right now. Please try again." } });
+      navigate("/submit-error", {
+        state: { message: "Unable to send right now. Please try again." },
+      });
     }
   };
 
@@ -137,11 +155,18 @@ const Partner = () => {
       <FloatingNavbar navItems={navItems} />
 
       <section className="container-custom pt-28 md:pt-36 pb-12 space-y-6">
-        <Badge variant="secondary" className="text-xs uppercase tracking-[0.25em]">
+        <Badge
+          variant="secondary"
+          className="text-xs uppercase tracking-[0.25em]"
+        >
           {content.hero.badge}
         </Badge>
-        <h1 className="text-4xl md:text-5xl font-display font-bold">{content.hero.title}</h1>
-        <p className="text-muted-foreground max-w-3xl">{content.hero.subheading}</p>
+        <h1 className="text-4xl md:text-5xl font-display font-bold">
+          {content.hero.title}
+        </h1>
+        <p className="text-muted-foreground max-w-3xl">
+          {content.hero.subheading}
+        </p>
       </section>
 
       <section className="container-custom pb-16 flex justify-center">
@@ -157,7 +182,9 @@ const Partner = () => {
             };
             return (
               <div key={field.id}>
-                <label className="text-sm text-muted-foreground block mb-2">{field.label}</label>
+                <label className="text-sm text-muted-foreground block mb-2">
+                  {field.label}
+                </label>
                 {field.type === "textarea" ? (
                   <Textarea {...common} rows={4} />
                 ) : field.type === "select" ? (
@@ -172,7 +199,10 @@ const Partner = () => {
                     ))}
                   </select>
                 ) : (
-                  <Input type={field.type === "number" ? "number" : field.type} {...common} />
+                  <Input
+                    type={field.type === "number" ? "number" : field.type}
+                    {...common}
+                  />
                 )}
               </div>
             );

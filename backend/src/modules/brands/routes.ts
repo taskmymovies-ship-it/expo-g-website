@@ -20,40 +20,52 @@ const brandSchema = z.object({
         width: z.number().optional(),
         height: z.number().optional(),
         size: z.number().optional(),
-      })
+      }),
     )
     .optional(),
-  summary: z.string().optional(),
-  detail: z
-    .object({
-      headline: z.string().optional(),
-      summary: z.string().optional(),
-      heroImage: z.string().optional(),
-      heroVariants: z
-        .array(
-          z.object({
-            key: z.string().min(1),
-            path: z.string().min(1),
-            fileName: z.string().optional(),
-            format: z.string().optional(),
-            width: z.number().optional(),
-            height: z.number().optional(),
-            size: z.number().optional(),
-          })
-        )
-        .optional(),
-      highlights: z
-        .array(z.object({ title: z.string(), body: z.string() }))
-        .default([]),
-      metrics: z
-        .array(z.object({ label: z.string(), value: z.string() }))
-        .default([]),
-      pullQuote: z.string().optional(),
-      ctaLabel: z.string().optional(),
-      ctaHref: z.string().optional(),
-      impactDescription: z.string().optional(),
-    })
-    .optional(),
+  summary: z.string().min(5, "Summary is required"),
+  detail: z.object({
+    headline: z.string().min(5, "Headline is required"),
+    summary: z.string().min(50, "Detail summary is required"),
+    heroImage: z.string().min(1, "Hero image is required"),
+
+    heroVariants: z
+      .array(
+        z.object({
+          key: z.string().min(1),
+          path: z.string().min(1),
+          fileName: z.string().optional(),
+          format: z.string().optional(),
+          width: z.number().optional(),
+          height: z.number().optional(),
+          size: z.number().optional(),
+        }),
+      )
+      .optional(),
+
+    highlights: z
+      .array(
+        z.object({
+          title: z.string().min(1),
+          body: z.string().min(10),
+        }),
+      )
+      .min(1, "At least one highlight is required"),
+
+    metrics: z
+      .array(
+        z.object({
+          label: z.string().min(1),
+          value: z.string().min(1),
+        }),
+      )
+      .min(1, "At least one metric is required"),
+
+    pullQuote: z.string().optional(),
+    ctaLabel: z.string().optional(),
+    ctaHref: z.string().optional(),
+    impactDescription: z.string().optional(),
+  }),
 });
 
 const brandsSchema = z.object({
@@ -71,7 +83,7 @@ const brandsHeroSchema = z.object({
   subheading: z
     .string()
     .default(
-      "Explore our partner roster—long-term collaborators, headline sponsors, and innovators who shaped the expo experience."
+      "Explore our partner roster—long-term collaborators, headline sponsors, and innovators who shaped the expo experience.",
     ),
 });
 
@@ -115,7 +127,14 @@ export default async function brandsRoutes(app: FastifyInstance) {
       key: "default",
     });
     if (!stored) {
-      return { eyebrow: "", title: "", description: "", ctaLabel: "", ctaHref: "", brands: [] };
+      return {
+        eyebrow: "",
+        title: "",
+        description: "",
+        ctaLabel: "",
+        ctaHref: "",
+        brands: [],
+      };
     }
     return {
       eyebrow: stored.eyebrow ?? "",
@@ -129,7 +148,11 @@ export default async function brandsRoutes(app: FastifyInstance) {
 
   app.get("/brands/hero", async () => {
     const db = await getDb();
-    const col = db.collection<{ badge: string; title: string; subheading: string }>("brands_hero");
+    const col = db.collection<{
+      badge: string;
+      title: string;
+      subheading: string;
+    }>("brands_hero");
     const stored = await col.findOne({ key: "default" });
     if (!stored) {
       return {
@@ -139,7 +162,11 @@ export default async function brandsRoutes(app: FastifyInstance) {
           "Explore our partner roster—long-term collaborators, headline sponsors, and innovators who shaped the expo experience.",
       };
     }
-    return { badge: stored.badge, title: stored.title, subheading: stored.subheading };
+    return {
+      badge: stored.badge,
+      title: stored.title,
+      subheading: stored.subheading,
+    };
   });
 
   app.get("/brands", async (request) => {
@@ -149,7 +176,15 @@ export default async function brandsRoutes(app: FastifyInstance) {
     const parsed = listQuerySchema.safeParse(request.query);
     const query = parsed.success
       ? parsed.data
-      : { page: 1, pageSize: 24, limit: 24, category: undefined, search: undefined, cursor: undefined, sort: "newest" };
+      : {
+          page: 1,
+          pageSize: 24,
+          limit: 24,
+          category: undefined,
+          search: undefined,
+          cursor: undefined,
+          sort: "newest",
+        };
 
     const filter: Record<string, unknown> = {};
     if (query.category && query.category !== "All") {
@@ -166,14 +201,24 @@ export default async function brandsRoutes(app: FastifyInstance) {
     const useCursor = Boolean(query.cursor);
     const limit = Math.min(Math.max(query.limit ?? 24, 1), 200);
 
+    // const sortParam = query.sort ?? "newest";
+    // const sort: Record<string, 1 | -1> =
+    //   sortParam === "oldest"
+    //     ? { createdAt: 1, _id: 1 }
+    //     : sortParam === "name-asc"
+    //       ? { name: 1 }
+    //       : sortParam === "name-desc"
+    //         ? { name: -1 }
+    //         : { createdAt: -1, _id: -1 };
+
     const sortParam = query.sort ?? "newest";
     const sort: Record<string, 1 | -1> =
       sortParam === "oldest"
         ? { createdAt: 1, _id: 1 }
         : sortParam === "name-asc"
-          ? { name: 1 }
+          ? { name: 1, _id: 1 }
           : sortParam === "name-desc"
-            ? { name: -1 }
+            ? { name: -1, _id: -1 }
             : { createdAt: -1, _id: -1 };
 
     if (useCursor) {
@@ -184,13 +229,10 @@ export default async function brandsRoutes(app: FastifyInstance) {
           // ignore invalid cursor, treat as start
         }
       }
-      const data = await col
-        .find(filter)
-        .sort(sortParam === "oldest" ? { _id: 1 } : { _id: -1 })
-        .limit(limit)
-        .toArray();
+      const data = await col.find(filter).sort(sort).limit(limit).toArray();
       const categories = await col.distinct("category");
-      const nextCursor = data.length === limit ? data[data.length - 1]._id?.toString() : null;
+      const nextCursor =
+        data.length === limit ? data[data.length - 1]._id?.toString() : null;
       return {
         data,
         cursor: { next: nextCursor, limit },
@@ -232,9 +274,15 @@ export default async function brandsRoutes(app: FastifyInstance) {
     { preHandler: [app.authenticate] },
     async (request, reply) => {
       const { slug } = request.params as { slug: string };
-      const parse = brandSchema.safeParse({ ...(request.body as object), slug });
+      const parse = brandSchema.safeParse({
+        ...(request.body as object),
+        slug,
+      });
       if (!parse.success) {
-        request.log.warn({ issues: parse.error.issues }, "brands.item validation failed");
+        request.log.warn(
+          { issues: parse.error.issues },
+          "brands.item validation failed",
+        );
         return reply.code(400).send({ message: "Invalid payload" });
       }
 
@@ -242,12 +290,15 @@ export default async function brandsRoutes(app: FastifyInstance) {
       const col = db.collection<z.infer<typeof brandSchema>>("brands");
       await col.updateOne(
         { slug },
-        { $set: { ...parse.data, updatedAt: new Date() }, $setOnInsert: { createdAt: new Date() } },
-        { upsert: true }
+        {
+          $set: { ...parse.data, updatedAt: new Date() },
+          $setOnInsert: { createdAt: new Date() },
+        },
+        { upsert: true },
       );
       request.log.info({ slug }, "brands.item upserted");
       return parse.data;
-    }
+    },
   );
 
   app.delete(
@@ -258,10 +309,11 @@ export default async function brandsRoutes(app: FastifyInstance) {
       const db = await getDb();
       const col = db.collection<z.infer<typeof brandSchema>>("brands");
       const res = await col.deleteOne({ slug });
-      if (!res.deletedCount) return reply.code(404).send({ message: "Brand not found" });
+      if (!res.deletedCount)
+        return reply.code(404).send({ message: "Brand not found" });
       request.log.info({ slug }, "brands.item deleted");
       return { message: "Deleted", slug };
-    }
+    },
   );
 
   app.put(
@@ -270,7 +322,10 @@ export default async function brandsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const parse = brandsSchema.safeParse(request.body);
       if (!parse.success) {
-        request.log.warn({ issues: parse.error.issues }, "brands.update validation failed");
+        request.log.warn(
+          { issues: parse.error.issues },
+          "brands.update validation failed",
+        );
         return reply.code(400).send({ message: "Invalid payload" });
       }
       const db = await getDb();
@@ -287,11 +342,11 @@ export default async function brandsRoutes(app: FastifyInstance) {
             brands: parse.data.brands,
           },
         },
-        { upsert: true }
+        { upsert: true },
       );
       request.log.info("brands.update success");
       return parse.data;
-    }
+    },
   );
 
   app.put(
@@ -300,15 +355,22 @@ export default async function brandsRoutes(app: FastifyInstance) {
     async (request, reply) => {
       const parsed = brandsHeroSchema.safeParse(request.body);
       if (!parsed.success) {
-        request.log.warn({ issues: parsed.error.issues }, "brands.hero validation failed");
+        request.log.warn(
+          { issues: parsed.error.issues },
+          "brands.hero validation failed",
+        );
         return reply.code(400).send({ message: "Invalid hero payload" });
       }
       const db = await getDb();
       const col = db.collection("brands_hero");
-      await col.updateOne({ key: "default" }, { $set: { key: "default", ...parsed.data } }, { upsert: true });
+      await col.updateOne(
+        { key: "default" },
+        { $set: { key: "default", ...parsed.data } },
+        { upsert: true },
+      );
       request.log.info("brands.hero updated");
       return parsed.data;
-    }
+    },
   );
 
   app.post(
@@ -323,8 +385,12 @@ export default async function brandsRoutes(app: FastifyInstance) {
       };
       const db = await getDb();
       const col = db.collection("brands_highlights");
-      await col.updateOne({ key: "default" }, { $set: empty }, { upsert: true });
+      await col.updateOne(
+        { key: "default" },
+        { $set: empty },
+        { upsert: true },
+      );
       return empty;
-    }
+    },
   );
 }

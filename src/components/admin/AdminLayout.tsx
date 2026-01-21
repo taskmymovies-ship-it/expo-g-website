@@ -4,10 +4,18 @@ import AdminNavbar from "@/components/admin/AdminNavbar";
 import AdminRail, { type AdminSectionLink } from "@/components/admin/AdminRail";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 
+// interface AdminLayoutProps {
+//   title?: string;
+//   description?: string;
+//   sections: AdminSectionLink[];
+//   children: ReactNode;
+// }
+
 interface AdminLayoutProps {
   title?: string;
   description?: string;
   sections: AdminSectionLink[];
+  navItems?: { label: string; href: string }[];
   children: ReactNode;
 }
 
@@ -19,6 +27,7 @@ const AdminLayout = ({
   title = "Admin Control Center",
   description = "Manage every section of the experience from one place.",
   sections,
+  navItems = [],
   children,
 }: AdminLayoutProps) => {
   return (
@@ -27,8 +36,12 @@ const AdminLayout = ({
       <section className="relative pt-20 md:pt-24 pb-16 md:pb-8">
         <div className="relative z-10 max-w-full px-14 mx-auto space-y-6">
           <div className="text-center space-y-3">
-            <h1 className="text-4xl md:text-5xl font-display font-bold">{title}</h1>
-            <p className="text-muted-foreground max-w-3xl mx-auto">{description}</p>
+            <h1 className="text-4xl md:text-5xl font-display font-bold">
+              {title}
+            </h1>
+            <p className="text-muted-foreground max-w-3xl mx-auto">
+              {description}
+            </p>
             <div className="flex items-center justify-center gap-2 flex-wrap">
               <Badge variant="secondary">Authenticated</Badge>
               <Badge variant="outline">Live preview enabled</Badge>

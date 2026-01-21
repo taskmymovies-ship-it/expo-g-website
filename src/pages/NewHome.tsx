@@ -17,13 +17,18 @@ import FoundersSpotlightSection from "@/components/FoundersSpotlightSection";
 import CoFoundersSection from "@/components/CoFoundersSection";
 import Footer, { type FooterData } from "@/components/Footer";
 import { TestimonialsCarousel } from "@/components/ui/testimonials-carousel";
-import { galleryImages, heroProducts as fallbackHero, navItems as staticNav, brandHighlights as fallbackBrands } from "@/data/expo-data";
+import {
+  galleryImages,
+  heroProducts as fallbackHero,
+  navItems as staticNav,
+  brandHighlights as fallbackBrands,
+} from "@/data/expo-data";
 import { celebritySpotlights } from "@/data/celebrity-data";
 import { sellerTestimonials } from "@/data/seller-testimonials";
 import { buyerTestimonials } from "@/data/buyer-testimonials";
 import { timelineContent } from "@/data/expo-data";
 import { entranceArches } from "@/data/entrance-arches";
-import { vvipGuests } from "@/data/vvip-data";
+import { Vvip, vvipGuests } from "@/data/vvip-data";
 import { founders } from "@/data/founders";
 import { coFounders } from "@/data/cofounders";
 import { celebritySpotlights as fallbackCelebs } from "@/data/celebrity-data";
@@ -192,7 +197,9 @@ type CoFoundersResponse = {
   ctaHref?: string;
   cofounders: CoFounderItem[];
 };
-type CountsResponse = { stats: { value: number; suffix?: string; label: string }[] };
+type CountsResponse = {
+  stats: { value: number; suffix?: string; label: string }[];
+};
 type DualCtaCard = {
   eyebrow?: string;
   title: string;
@@ -248,7 +255,8 @@ const NewHome = () => {
   const [brandsData, setBrandsData] = useState<BrandsResponse>({
     eyebrow: "Trustworthy Leaders",
     title: "Brands that trust ICE Exhibitions",
-    description: "Logos and stories from partners who have built standout moments on our platform.",
+    description:
+      "Logos and stories from partners who have built standout moments on our platform.",
     ctaLabel: "View all partner brands",
     ctaHref: "/brands",
     brands: fallbackBrands,
@@ -256,7 +264,8 @@ const NewHome = () => {
   const [celebsData, setCelebsData] = useState<CelebResponse>({
     eyebrow: "Celebrity Photos",
     title: "Faces that amplify the spotlight",
-    description: "A rotating showcase of performers, hosts, and investors who bring star power to ICE Exhibitions.",
+    description:
+      "A rotating showcase of performers, hosts, and investors who bring star power to ICE Exhibitions.",
     ctaLabel: "See all appearances",
     ctaHref: "/gallery",
     celebrities: fallbackCelebs,
@@ -264,7 +273,8 @@ const NewHome = () => {
   const [sellersData, setSellersData] = useState<SellersResponse>({
     eyebrow: "Seller Voices",
     title: "Proof from the sellers’ side",
-    description: "Momentum snapshots instead of long testimonials—outcomes, conversion lifts, and the playbook that made them happen.",
+    description:
+      "Momentum snapshots instead of long testimonials—outcomes, conversion lifts, and the playbook that made them happen.",
     ctaLabel: "See all sellers",
     ctaHref: "/gallery",
     sellers: sellerTestimonials,
@@ -272,7 +282,8 @@ const NewHome = () => {
   const [buyersData, setBuyersData] = useState<BuyersResponse>({
     eyebrow: "Buyer Voices",
     title: "Why buyers keep coming back",
-    description: "Decision-makers and superfans sharing how they navigate ICE—curated lanes, late-night sets, and baskets that keep growing.",
+    description:
+      "Decision-makers and superfans sharing how they navigate ICE—curated lanes, late-night sets, and baskets that keep growing.",
     ctaLabel: "See all buyer stories",
     ctaHref: "/buyers",
     buyers: buyerTestimonials,
@@ -280,19 +291,22 @@ const NewHome = () => {
   const [timelineData, setTimelineData] = useState<TimelineResponse>({
     eyebrow: "30 Years • Legacy in Motion",
     title: "ICE Exhibitions Journey Timeline",
-    description: "From the first city arch to a 10-city hybrid circuit—milestones that shaped our platform.",
+    description:
+      "From the first city arch to a 10-city hybrid circuit—milestones that shaped our platform.",
     milestones: timelineContent,
   });
   const [archesData, setArchesData] = useState<ArchesResponse>({
     eyebrow: "Review the moment",
     title: "Mega Entrance Arches across 10 cities",
-    description: "Three decades of arches engineered for arrivals—kinetic light tunnels, climate-smart canopies, and city-inspired silhouettes.",
+    description:
+      "Three decades of arches engineered for arrivals—kinetic light tunnels, climate-smart canopies, and city-inspired silhouettes.",
     arches: entranceArches,
   });
   const [stallsData, setStallsData] = useState<StallsResponse>({
     eyebrow: "Review the moment",
     title: "10,000+ brands & seller stalls",
-    description: "A visual atlas of the booths and showcases that defined ICE Exhibitions over 30 years.",
+    description:
+      "A visual atlas of the booths and showcases that defined ICE Exhibitions over 30 years.",
     ctaLabel: "See the full archive",
     ctaHref: "/gallery",
     images: fallbackGalleryImages.map((src) => ({ src, href: "/gallery" })),
@@ -304,10 +318,14 @@ const NewHome = () => {
   const [buyerMosaicData, setBuyerMosaicData] = useState<BuyerMosaicResponse>({
     eyebrow: "Review the moment",
     title: "20 million loyal buyers",
-    description: "Faces and crowds from three decades of ICE—loyal buyers returning for the launches, workshops, and night sets they love.",
+    description:
+      "Faces and crowds from three decades of ICE—loyal buyers returning for the launches, workshops, and night sets they love.",
     ctaLabel: "Browse buyer moments",
     ctaHref: "/gallery",
-    images: fallbackGalleryImages.map((src, idx) => ({ src, href: `/gallery#buyer-${idx + 1}` })),
+    images: fallbackGalleryImages.map((src, idx) => ({
+      src,
+      href: `/gallery#buyer-${idx + 1}`,
+    })),
     stats: [
       { value: "20M+", label: "buyers over 30 years", icon: "users" },
       { value: "10 cities", label: "across India", icon: "grid" },
@@ -316,7 +334,8 @@ const NewHome = () => {
   const [vvipData, setVvipData] = useState<VvipResponse>({
     eyebrow: "VVIPs",
     title: "Leaders who shaped the ICE stage",
-    description: "Keynote guests, cultural envoys, and investors who elevated each edition.",
+    description:
+      "Keynote guests, cultural envoys, and investors who elevated each edition.",
     ctaLabel: "See all VVIPs",
     ctaHref: "/gallery",
     guests: vvipGuests,
@@ -324,7 +343,8 @@ const NewHome = () => {
   const [foundersData, setFoundersData] = useState<FoundersResponse>({
     eyebrow: "Review the moment",
     title: "Founders of ICE 1.0 & ICE 2.0",
-    description: "From offline arches to hybrid broadcasts—meet the founders who evolved ICE from city expos to a national platform.",
+    description:
+      "From offline arches to hybrid broadcasts—meet the founders who evolved ICE from city expos to a national platform.",
     ctaLabel: "See all founders",
     ctaHref: "/founders",
     founders,
@@ -332,7 +352,8 @@ const NewHome = () => {
   const [cofoundersData, setCofoundersData] = useState<CoFoundersResponse>({
     eyebrow: "Review the moment",
     title: "Co-founding team of ICE 2.0 (IGE & IGN)",
-    description: "Builders behind the hybrid platform—linking on-ground showcases with digital broadcast networks.",
+    description:
+      "Builders behind the hybrid platform—linking on-ground showcases with digital broadcast networks.",
     ctaLabel: "See all co-founders",
     ctaHref: "/cofounders",
     cofounders: coFounders,
@@ -349,14 +370,16 @@ const NewHome = () => {
     sellers: {
       eyebrow: "CTA • Sellers",
       title: "Showcase your brand at ICE Exhibitions",
-      description: "Book a pavilion, plan your launch, and let our production team handle staging, media, and lead capture.",
+      description:
+        "Book a pavilion, plan your launch, and let our production team handle staging, media, and lead capture.",
       primary: { label: "Plan my showcase", href: "/partner" },
       secondary: { label: "Talk to production", href: "/contact" },
     },
     buyers: {
       eyebrow: "CTA • Buyers",
       title: "Be first to the next ICE edition",
-      description: "Unlock schedules, early access drops, and curated routes tailored to what you want to see.",
+      description:
+        "Unlock schedules, early access drops, and curated routes tailored to what you want to see.",
       primary: { label: "Get buyer access", href: "/sponsor" },
       secondary: { label: "View full program", href: "/gallery" },
     },
@@ -364,7 +387,8 @@ const NewHome = () => {
   const [teamData, setTeamData] = useState<TeamsResponse>({
     eyebrow: "Team",
     title: "The team behind ICE",
-    description: "Producers, ops, media, design, and data—meet the people keeping the circuit running.",
+    description:
+      "Producers, ops, media, design, and data—meet the people keeping the circuit running.",
     ctaLabel: "Meet the full team",
     ctaHref: "/teams",
     team: [
@@ -374,7 +398,8 @@ const NewHome = () => {
         role: "Production Lead",
         department: "Operations",
         focus: "Large-format builds",
-        image: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=600&q=80",
+        image:
+          "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=600&q=80",
       },
       {
         id: "team-2",
@@ -382,7 +407,8 @@ const NewHome = () => {
         role: "Media & Broadcast",
         department: "Media",
         focus: "Live stream & highlights",
-        image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
+        image:
+          "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
       },
       {
         id: "team-3",
@@ -390,7 +416,8 @@ const NewHome = () => {
         role: "Buyer Programs",
         department: "Growth",
         focus: "Curation & routes",
-        image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
+        image:
+          "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
       },
       {
         id: "team-4",
@@ -398,36 +425,45 @@ const NewHome = () => {
         role: "Design Director",
         department: "Design",
         focus: "Staging & visual systems",
-        image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
+        image:
+          "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
       },
     ],
   });
-  const [testimonialsData, setTestimonialsData] = useState<TestimonialsResponse>({
-    hero: { badge: "Testimonials", title: "What our partners say", intro: "Snapshots from brands, buyers, and founders." },
-    testimonials: [
-      {
-        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
-        name: "Ananya Patel",
-        role: "Founder",
-        company: "Ignite Labs",
-        rating: 5,
+  const [testimonialsData, setTestimonialsData] =
+    useState<TestimonialsResponse>({
+      hero: {
+        badge: "Testimonials",
+        title: "What our partners say",
+        intro: "Snapshots from brands, buyers, and founders.",
       },
-      {
-        image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
-        name: "Rohit Desai",
-        role: "CMO",
-        company: "Northstar",
-        rating: 5,
-      },
-      {
-        image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80",
-        name: "Meera Joshi",
-        role: "Head of Buyer Programs",
-        company: "ICE",
-        rating: 4,
-      },
-    ],
-  });
+      testimonials: [
+        {
+          image:
+            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
+          name: "Ananya Patel",
+          role: "Founder",
+          company: "Ignite Labs",
+          rating: 5,
+        },
+        {
+          image:
+            "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=600&q=80",
+          name: "Rohit Desai",
+          role: "CMO",
+          company: "Northstar",
+          rating: 5,
+        },
+        {
+          image:
+            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=600&q=80",
+          name: "Meera Joshi",
+          role: "Head of Buyer Programs",
+          company: "ICE",
+          rating: 4,
+        },
+      ],
+    });
   const [footerData, setFooterData] = useState<FooterResponse | null>(null);
   const [layout, setLayout] = useState<LayoutSection[]>([
     { id: "hero", label: "Hero", enabled: true },
@@ -462,10 +498,11 @@ const NewHome = () => {
         setHeroContent(
           data.heroContent ?? {
             title: "Experience the Expo Legacy",
-            subtitle: "A decade of immersive expos, captured in over 1,000 moments.",
+            subtitle:
+              "A decade of immersive expos, captured in over 1,000 moments.",
             description:
               "Where brands connect, innovate, and inspire. Explore our visual archive of unforgettable experiences.",
-          }
+          },
         );
       } catch {
         setHeroData(fallbackHero);
@@ -502,7 +539,9 @@ const NewHome = () => {
         setBrandsData({
           eyebrow: data.eyebrow || "Trustworthy Leaders",
           title: data.title || "Brands that trust ICE Exhibitions",
-          description: data.description || "Logos and stories from partners who have built standout moments on our platform.",
+          description:
+            data.description ||
+            "Logos and stories from partners who have built standout moments on our platform.",
           ctaLabel: data.ctaLabel || "View all partner brands",
           ctaHref: data.ctaHref || "/brands",
           brands: data.brands?.length ? data.brands : fallbackBrands,
@@ -519,10 +558,14 @@ const NewHome = () => {
         setCelebsData({
           eyebrow: data.eyebrow || "Celebrity Photos",
           title: data.title || "Faces that amplify the spotlight",
-          description: data.description || "A rotating showcase of performers, hosts, and investors who bring star power to ICE Exhibitions.",
+          description:
+            data.description ||
+            "A rotating showcase of performers, hosts, and investors who bring star power to ICE Exhibitions.",
           ctaLabel: data.ctaLabel || "See all appearances",
           ctaHref: data.ctaHref || "/gallery",
-          celebrities: data.celebrities?.length ? data.celebrities : fallbackCelebs,
+          celebrities: data.celebrities?.length
+            ? data.celebrities
+            : fallbackCelebs,
         });
       } catch {
         setCelebsData((prev) => prev);
@@ -598,7 +641,9 @@ const NewHome = () => {
               data.hero?.intro ||
               "Hear from brands, buyers, and founders who experienced ICE—from the floor to the main stage.",
           },
-          testimonials: data.testimonials?.length ? data.testimonials : testimonialsData.testimonials,
+          testimonials: data.testimonials?.length
+            ? data.testimonials
+            : testimonialsData.testimonials,
         });
       } catch {
         setTestimonialsData((prev) => prev);
@@ -615,7 +660,9 @@ const NewHome = () => {
           description:
             data.description ||
             "From the first city arch to a 10-city hybrid circuit—milestones that shaped our platform.",
-          milestones: data.milestones?.length ? data.milestones : timelineContent,
+          milestones: data.milestones?.length
+            ? data.milestones
+            : timelineContent,
         });
       } catch {
         setTimelineData((prev) => prev);
@@ -646,7 +693,9 @@ const NewHome = () => {
         setStallsData({
           eyebrow: data.eyebrow || "Review the moment",
           title: data.title || "10,000+ brands & seller stalls",
-          description: data.description || "A visual atlas of the booths and showcases that defined ICE Exhibitions over 30 years.",
+          description:
+            data.description ||
+            "A visual atlas of the booths and showcases that defined ICE Exhibitions over 30 years.",
           ctaLabel: data.ctaLabel || "See the full archive",
           ctaHref: data.ctaHref || "/gallery",
           images: data.images?.length
@@ -679,12 +728,19 @@ const NewHome = () => {
           ctaHref: data.ctaHref || "/gallery",
           images: data.images?.length
             ? data.images
-            : fallbackGalleryImages.map((src, idx) => ({ src, href: `/gallery#buyer-${idx + 1}` })),
+            : fallbackGalleryImages.map((src, idx) => ({
+                src,
+                href: `/gallery#buyer-${idx + 1}`,
+              })),
           stats:
             data.stats && data.stats.length
               ? data.stats
               : [
-                  { value: "20M+", label: "buyers over 30 years", icon: "users" },
+                  {
+                    value: "20M+",
+                    label: "buyers over 30 years",
+                    icon: "users",
+                  },
                   { value: "10 cities", label: "across India", icon: "grid" },
                 ],
         });
@@ -700,7 +756,9 @@ const NewHome = () => {
         setVvipData({
           eyebrow: data.eyebrow || "VVIPs",
           title: data.title || "Leaders who shaped the ICE stage",
-          description: data.description || "Keynote guests, cultural envoys, and investors who elevated each edition.",
+          description:
+            data.description ||
+            "Keynote guests, cultural envoys, and investors who elevated each edition.",
           ctaLabel: data.ctaLabel || "See all VVIPs",
           ctaHref: data.ctaHref || "/gallery",
           guests: data.guests?.length ? data.guests : vvipGuests,
@@ -760,7 +818,11 @@ const NewHome = () => {
                   { value: 20, suffix: "M+", label: "buyers" },
                   { value: 10000, suffix: "+", label: "brands & sellers" },
                   { value: 10, label: "cities across India" },
-                  { value: 30, suffix: "+", label: "years of mega exhibitions" },
+                  {
+                    value: 30,
+                    suffix: "+",
+                    label: "years of mega exhibitions",
+                  },
                 ],
         });
       } catch {
@@ -858,7 +920,10 @@ const NewHome = () => {
         title={celebsData.title}
         description={celebsData.description}
         celebrities={celebsData.celebrities}
-        cta={{ label: celebsData.ctaLabel || "See all appearances", href: celebsData.ctaHref || "/gallery" }}
+        cta={{
+          label: celebsData.ctaLabel || "See all appearances",
+          href: celebsData.ctaHref || "/gallery",
+        }}
       />
     ),
     sellers: (
@@ -868,7 +933,10 @@ const NewHome = () => {
         title={sellersData.title}
         description={sellersData.description}
         sellers={sellersData.sellers}
-        cta={{ label: sellersData.ctaLabel || "See all sellers", href: sellersData.ctaHref || "/gallery" }}
+        cta={{
+          label: sellersData.ctaLabel || "See all sellers",
+          href: sellersData.ctaHref || "/gallery",
+        }}
       />
     ),
     buyers: (
@@ -878,18 +946,30 @@ const NewHome = () => {
         title={buyersData.title}
         description={buyersData.description}
         buyers={buyersData.buyers}
-        cta={{ label: buyersData.ctaLabel || "See all buyer stories", href: buyersData.ctaHref || "/buyers" }}
+        cta={{
+          label: buyersData.ctaLabel || "See all buyer stories",
+          href: buyersData.ctaHref || "/buyers",
+        }}
       />
     ),
     team: (
-      <section key="team" className="section-padding bg-muted/40 relative overflow-hidden">
+      <section
+        key="team"
+        className="section-padding bg-muted/40 relative overflow-hidden"
+      >
         <div className="absolute inset-0 opacity-60 bg-[radial-gradient(circle_at_20%_20%,rgba(99,102,241,0.12),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(16,185,129,0.12),transparent_30%)]" />
         <div className="container-custom relative">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
             <div className="max-w-2xl">
-              <span className="text-primary font-medium text-sm uppercase tracking-wider">{teamData.eyebrow || "Team"}</span>
-              <h2 className="text-3xl md:text-5xl font-bold font-display text-foreground mt-2">{teamData.title}</h2>
-              <p className="text-muted-foreground mt-4">{teamData.description}</p>
+              <span className="text-primary font-medium text-sm uppercase tracking-wider">
+                {teamData.eyebrow || "Team"}
+              </span>
+              <h2 className="text-3xl md:text-5xl font-bold font-display text-foreground mt-2">
+                {teamData.title}
+              </h2>
+              <p className="text-muted-foreground mt-4">
+                {teamData.description}
+              </p>
             </div>
             {teamData.ctaHref && (
               <a
@@ -923,9 +1003,17 @@ const NewHome = () => {
                     </span>
                   </div>
                   <div className="p-5 relative space-y-2">
-                    <h3 className="text-xl font-semibold text-foreground">{member.name}</h3>
-                    <p className="text-sm text-muted-foreground">{member.role}</p>
-                    {member.focus && <p className="text-sm text-muted-foreground">{member.focus}</p>}
+                    <h3 className="text-xl font-semibold text-foreground">
+                      {member.name}
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      {member.role}
+                    </p>
+                    {member.focus && (
+                      <p className="text-sm text-muted-foreground">
+                        {member.focus}
+                      </p>
+                    )}
                     {member.href && (
                       <div className="pt-2 text-sm font-medium text-primary inline-flex items-center gap-1">
                         View profile <span aria-hidden>→</span>
@@ -962,7 +1050,13 @@ const NewHome = () => {
             </p>
           </div>
         </div>
-        <StickyScrollReveal content={timelineData.milestones.length ? timelineData.milestones : timelineContent} />
+        <StickyScrollReveal
+          content={
+            timelineData.milestones.length
+              ? timelineData.milestones
+              : timelineContent
+          }
+        />
       </section>
     ),
     arches: (
@@ -982,7 +1076,10 @@ const NewHome = () => {
         description={stallsData.description}
         images={stallsData.images}
         stats={stallsData.stats}
-        cta={{ label: stallsData.ctaLabel || "See the full archive", href: stallsData.ctaHref || "/gallery" }}
+        cta={{
+          label: stallsData.ctaLabel || "See the full archive",
+          href: stallsData.ctaHref || "/gallery",
+        }}
       />
     ),
     buyerMosaic: (
@@ -993,7 +1090,10 @@ const NewHome = () => {
         description={buyerMosaicData.description}
         images={buyerMosaicData.images}
         stats={buyerMosaicData.stats}
-        cta={{ label: buyerMosaicData.ctaLabel || "Browse buyer moments", href: buyerMosaicData.ctaHref || "/gallery" }}
+        cta={{
+          label: buyerMosaicData.ctaLabel || "Browse buyer moments",
+          href: buyerMosaicData.ctaHref || "/gallery",
+        }}
       />
     ),
     vvips: (
@@ -1003,7 +1103,10 @@ const NewHome = () => {
         title={vvipData.title}
         description={vvipData.description}
         guests={vvipData.guests}
-        cta={{ label: vvipData.ctaLabel || "See all VVIPs", href: vvipData.ctaHref || "/gallery" }}
+        cta={{
+          label: vvipData.ctaLabel || "See all VVIPs",
+          href: vvipData.ctaHref || "/gallery",
+        }}
       />
     ),
     founders: (
@@ -1013,7 +1116,10 @@ const NewHome = () => {
         title={foundersData.title}
         description={foundersData.description}
         founders={foundersData.founders}
-        cta={{ label: foundersData.ctaLabel || "See all founders", href: foundersData.ctaHref || "/founders" }}
+        cta={{
+          label: foundersData.ctaLabel || "See all founders",
+          href: foundersData.ctaHref || "/founders",
+        }}
       />
     ),
     cofounders: (
@@ -1023,19 +1129,30 @@ const NewHome = () => {
         title={cofoundersData.title}
         description={cofoundersData.description}
         cofounders={cofoundersData.cofounders}
-        cta={{ label: cofoundersData.ctaLabel || "See all co-founders", href: cofoundersData.ctaHref || "/cofounders" }}
+        cta={{
+          label: cofoundersData.ctaLabel || "See all co-founders",
+          href: cofoundersData.ctaHref || "/cofounders",
+        }}
       />
     ),
     counts: <CountingSection key="counts" stats={countsData.stats} />,
-    dualCta: <DualCtaSection key="dualCta" sellers={dualCtaData.sellers} buyers={dualCtaData.buyers} />,
+    dualCta: (
+      <DualCtaSection
+        key="dualCta"
+        sellers={dualCtaData.sellers}
+        buyers={dualCtaData.buyers}
+      />
+    ),
     footer: <Footer key="footer" data={footerData || undefined} />,
   };
 
   const ordered = layout.filter((s) => s.enabled && sectionMap[s.id]);
-  const renderSections = ordered.length ? ordered.map((s) => sectionMap[s.id]) : Object.values(sectionMap);
+  const renderSections = ordered.length
+    ? ordered.map((s) => sectionMap[s.id])
+    : Object.values(sectionMap);
 
   return (
-    <main className="min-h-screen bg-background overflow-hidden">
+    <main className="min-h-screen bg-background">
       <FloatingNavbar navItems={navItems} />
       {renderSections}
     </main>

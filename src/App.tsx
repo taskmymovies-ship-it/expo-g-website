@@ -3,7 +3,13 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import Index from "./pages/Index";
 import Gallery from "./pages/Gallery";
 import GalleryDetail from "./pages/GalleryDetail";
@@ -117,7 +123,8 @@ const AdminSessionListener = () => {
       navigate("/admin/login", { replace: true });
     };
     window.addEventListener(ADMIN_SESSION_EXPIRED_EVENT, handler);
-    return () => window.removeEventListener(ADMIN_SESSION_EXPIRED_EVENT, handler);
+    return () =>
+      window.removeEventListener(ADMIN_SESSION_EXPIRED_EVENT, handler);
   }, [navigate]);
 
   return null;
@@ -601,8 +608,8 @@ const App = () => (
           <Route path="/cookies" element={<Cookies />} />
           <Route path="/test" element={<TestPage />} />
           <Route path="/gallery" element={<Gallery />} />
-      <Route path="/gallery/:id" element={<GalleryDetail />} />
-      <Route path="/me" element={<Me />} />
+          <Route path="/gallery/:id" element={<GalleryDetail />} />
+          <Route path="/me" element={<Me />} />
           <Route path="/brands/:slug" element={<BrandDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

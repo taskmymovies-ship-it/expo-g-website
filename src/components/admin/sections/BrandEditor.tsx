@@ -1,9 +1,17 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, RotateCcw, Save } from "lucide-react";
+import { useState } from "react";
 
 export type BrandItem = {
   slug: string;
@@ -12,6 +20,27 @@ export type BrandItem = {
   relationship: string;
   category: string;
   image: string;
+  summary?: string;
+  detail?: {
+    headline?: string;
+    summary?: string;
+    heroImage?: string;
+
+    highlights?: {
+      title: string;
+      body: string;
+    }[];
+
+    metrics?: {
+      label: string;
+      value: string;
+    }[];
+
+    pullQuote?: string;
+    ctaLabel?: string;
+    ctaHref?: string;
+    impactDescription?: string;
+  };
 };
 
 export type BrandsData = {
@@ -32,9 +61,11 @@ interface BrandEditorProps {
   onRestore: () => void;
   saving: boolean;
   loading: boolean;
+  successMsg?: string;
 }
 
 const BrandEditor = ({
+  successMsg,
   data,
   onChange,
   onAddBrand,
@@ -44,9 +75,14 @@ const BrandEditor = ({
   saving,
   loading,
 }: BrandEditorProps) => {
-  const updateField = (key: keyof BrandsData, value: any) => onChange({ ...data, [key]: value });
+  const updateField = (key: keyof BrandsData, value: any) =>
+    onChange({ ...data, [key]: value });
 
-  const updateBrand = (idx: number, key: keyof BrandItem, value: string) => {
+  const updateBrand = <K extends keyof BrandItem>(
+    idx: number,
+    key: K,
+    value: BrandItem[K],
+  ) => {
     const next = [...data.brands];
     next[idx] = { ...next[idx], [key]: value };
     updateField("brands", next);
@@ -55,7 +91,14 @@ const BrandEditor = ({
   return (
     <div id="brands" className="pt-10 space-y-4">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl md:text-3xl font-display font-semibold">Brand Highlights Editor</h2>
+        {successMsg && (
+          <div className="mb-4 text-sm text-green-600 bg-green-50 border border-green-200 px-3 py-2 rounded-lg">
+            {successMsg}
+          </div>
+        )}
+        <h2 className="text-2xl md:text-3xl font-display font-semibold">
+          Brand Highlights Editor
+        </h2>
         <p className="text-muted-foreground text-sm">
           Manage the “Brands logo / Trustworthy Leaders” section content.
         </p>
@@ -72,11 +115,15 @@ const BrandEditor = ({
           <Card className="bg-card/80 border-border/70">
             <CardHeader>
               <CardTitle>Content</CardTitle>
-              <CardDescription>Eyebrow, title, and description for the brand highlights.</CardDescription>
+              <CardDescription>
+                Eyebrow, title, and description for the brand highlights.
+              </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 overflow-y-auto">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Eyebrow</label>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  Eyebrow
+                </label>
                 <Input
                   value={data.eyebrow}
                   onChange={(e) => updateField("eyebrow", e.target.value)}
@@ -84,7 +131,9 @@ const BrandEditor = ({
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Title</label>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  Title
+                </label>
                 <Input
                   value={data.title}
                   onChange={(e) => updateField("title", e.target.value)}
@@ -92,7 +141,9 @@ const BrandEditor = ({
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">Description</label>
+                <label className="text-xs text-muted-foreground mb-1 block">
+                  Description
+                </label>
                 <Input
                   value={data.description}
                   onChange={(e) => updateField("description", e.target.value)}
@@ -101,7 +152,9 @@ const BrandEditor = ({
               </div>
               <div className="grid md:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">CTA label</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    CTA label
+                  </label>
                   <Input
                     value={data.ctaLabel || ""}
                     onChange={(e) => updateField("ctaLabel", e.target.value)}
@@ -109,7 +162,9 @@ const BrandEditor = ({
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground mb-1 block">CTA href</label>
+                  <label className="text-xs text-muted-foreground mb-1 block">
+                    CTA href
+                  </label>
                   <Input
                     value={data.ctaHref || ""}
                     onChange={(e) => updateField("ctaHref", e.target.value)}
@@ -121,19 +176,26 @@ const BrandEditor = ({
           </Card>
         </TabsContent>
 
-        <TabsContent value="brands-list" className="mt-4">
+        {/* <TabsContent value="brands-list" className="mt-4">
           <Card className="bg-card/80 border-border/70">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Brands</CardTitle>
-                <CardDescription>Cards shown in the brand highlights section.</CardDescription>
+                <CardDescription>
+                  Cards shown in the brand highlights section.
+                </CardDescription>
               </div>
             </CardHeader>
             <CardContent className="space-y-4">
               {data.brands.map((brand, idx) => (
-                <div key={idx} className="grid md:grid-cols-3 gap-3 items-end border border-border/60 rounded-xl p-3">
+                <div
+                  key={idx}
+                  className="grid md:grid-cols-3 gap-3 items-end border border-border/60 rounded-xl p-3"
+                >
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Name</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Name
+                    </label>
                     <Input
                       value={brand.name}
                       onChange={(e) => updateBrand(idx, "name", e.target.value)}
@@ -141,7 +203,9 @@ const BrandEditor = ({
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Slug</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Slug
+                    </label>
                     <Input
                       value={brand.slug}
                       onChange={(e) => updateBrand(idx, "slug", e.target.value)}
@@ -149,7 +213,9 @@ const BrandEditor = ({
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Logo</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Logo
+                    </label>
                     <Input
                       value={brand.logo}
                       onChange={(e) => updateBrand(idx, "logo", e.target.value)}
@@ -157,41 +223,386 @@ const BrandEditor = ({
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Relationship</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Relationship
+                    </label>
                     <Input
                       value={brand.relationship}
-                      onChange={(e) => updateBrand(idx, "relationship", e.target.value)}
+                      onChange={(e) =>
+                        updateBrand(idx, "relationship", e.target.value)
+                      }
                       placeholder="3-Year Partner"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Category</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Category
+                    </label>
                     <Input
                       value={brand.category}
-                      onChange={(e) => updateBrand(idx, "category", e.target.value)}
+                      onChange={(e) =>
+                        updateBrand(idx, "category", e.target.value)
+                      }
                       placeholder="Technology"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground mb-1 block">Image URL</label>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Image URL
+                    </label>
                     <Input
                       value={brand.image}
-                      onChange={(e) => updateBrand(idx, "image", e.target.value)}
+                      onChange={(e) =>
+                        updateBrand(idx, "image", e.target.value)
+                      }
                       placeholder="https://..."
                     />
                   </div>
                   <div className="flex justify-end md:col-span-3">
-                    <Button variant="ghost" size="icon" onClick={() => onRemoveBrand(idx)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onRemoveBrand(idx)}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
               ))}
-              {!data.brands.length && <p className="text-sm text-muted-foreground">No brands yet.</p>}
+              {!data.brands.length && (
+                <p className="text-sm text-muted-foreground">No brands yet.</p>
+              )}
               <div className="flex justify-end">
                 <Button variant="outline" onClick={onAddBrand}>
                   <Plus className="w-4 h-4 mr-2" />
                   Add brand
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent> */}
+
+        <TabsContent value="brands-list" className="mt-4">
+          <Card className="bg-card/80 border-border/70">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Brands</CardTitle>
+                <CardDescription>
+                  Cards shown in the brand highlights section.
+                </CardDescription>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {data.brands.map((brand, idx) => (
+                <div
+                  key={idx}
+                  className="grid md:grid-cols-3 gap-3 items-end border border-border/60 rounded-xl p-3"
+                >
+                  {/* Basic Fields */}
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Name
+                    </label>
+                    <Input
+                      value={brand.name}
+                      onChange={(e) => updateBrand(idx, "name", e.target.value)}
+                      placeholder="Brand name"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Slug
+                    </label>
+                    <Input
+                      value={brand.slug}
+                      onChange={(e) => updateBrand(idx, "slug", e.target.value)}
+                      placeholder="brand-slug"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Logo
+                    </label>
+                    <Input
+                      value={brand.logo}
+                      onChange={(e) => updateBrand(idx, "logo", e.target.value)}
+                      placeholder="https://logo.com/logo.png"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Relationship
+                    </label>
+                    <Input
+                      value={brand.relationship}
+                      onChange={(e) =>
+                        updateBrand(idx, "relationship", e.target.value)
+                      }
+                      placeholder="3-Year Partner"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Category
+                    </label>
+                    <Input
+                      value={brand.category}
+                      onChange={(e) =>
+                        updateBrand(idx, "category", e.target.value)
+                      }
+                      placeholder="Technology"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Image URL
+                    </label>
+                    <Input
+                      value={brand.image}
+                      onChange={(e) =>
+                        updateBrand(idx, "image", e.target.value)
+                      }
+                      placeholder="https://example.com/image.jpg"
+                    />
+                  </div>
+
+                  {/* Advanced Detail Fields */}
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Headline
+                    </label>
+                    <Input
+                      value={brand.detail?.headline || ""}
+                      onChange={(e) =>
+                        updateBrand(idx, "detail", {
+                          ...(brand.detail || {}),
+                          headline: e.target.value,
+                        })
+                      }
+                      placeholder="Detail Headline"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Summary
+                    </label>
+                    <Textarea
+                      value={brand.detail?.summary || ""}
+                      onChange={(e) =>
+                        updateBrand(idx, "detail", {
+                          ...(brand.detail || {}),
+                          summary: e.target.value,
+                        })
+                      }
+                      placeholder="Detail Summary"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Hero Image URL
+                    </label>
+                    <Input
+                      value={brand.detail?.heroImage || ""}
+                      onChange={(e) =>
+                        updateBrand(idx, "detail", {
+                          ...(brand.detail || {}),
+                          heroImage: e.target.value,
+                        })
+                      }
+                      placeholder="https://example.com/hero.jpg"
+                    />
+                  </div>
+
+                  {/* Highlights Array */}
+                  <div className="md:col-span-3 space-y-2">
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Highlights
+                    </label>
+                    {(brand.detail?.highlights || []).map((h, i) => (
+                      <div key={i} className="flex gap-2">
+                        <Input
+                          value={h.title}
+                          onChange={(e) => {
+                            const next = [...(brand.detail?.highlights || [])];
+                            next[i].title = e.target.value;
+                            updateBrand(idx, "detail", {
+                              ...(brand.detail || {}),
+                              highlights: next,
+                            });
+                          }}
+                          placeholder="Highlight Title"
+                        />
+                        <Input
+                          value={h.body}
+                          onChange={(e) => {
+                            const next = [...(brand.detail?.highlights || [])];
+                            next[i].body = e.target.value;
+                            updateBrand(idx, "detail", {
+                              ...(brand.detail || {}),
+                              highlights: next,
+                            });
+                          }}
+                          placeholder="Highlight Body"
+                        />
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const next = [
+                          ...(brand.detail?.highlights || []),
+                          { title: "", body: "" },
+                        ];
+                        updateBrand(idx, "detail", {
+                          ...(brand.detail || {}),
+                          highlights: next,
+                        });
+                      }}
+                    >
+                      Add Highlight
+                    </Button>
+                  </div>
+
+                  {/* Metrics Array */}
+                  <div className="md:col-span-3 space-y-2">
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Metrics
+                    </label>
+                    {(brand.detail?.metrics || []).map((m, i) => (
+                      <div key={i} className="flex gap-2">
+                        <Input
+                          value={m.label}
+                          onChange={(e) => {
+                            const next = [...(brand.detail?.metrics || [])];
+                            next[i].label = e.target.value;
+                            updateBrand(idx, "detail", {
+                              ...(brand.detail || {}),
+                              metrics: next,
+                            });
+                          }}
+                          placeholder="Metric Label"
+                        />
+                        <Input
+                          value={m.value}
+                          onChange={(e) => {
+                            const next = [...(brand.detail?.metrics || [])];
+                            next[i].value = e.target.value;
+                            updateBrand(idx, "detail", {
+                              ...(brand.detail || {}),
+                              metrics: next,
+                            });
+                          }}
+                          placeholder="Metric Value"
+                        />
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const next = [
+                          ...(brand.detail?.metrics || []),
+                          { label: "", value: "" },
+                        ];
+                        updateBrand(idx, "detail", {
+                          ...(brand.detail || {}),
+                          metrics: next,
+                        });
+                      }}
+                    >
+                      Add Metric
+                    </Button>
+                  </div>
+
+                  {/* Pull Quote */}
+                  <div className="md:col-span-3">
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Pull Quote
+                    </label>
+                    <Textarea
+                      value={brand.detail?.pullQuote || ""}
+                      onChange={(e) =>
+                        updateBrand(idx, "detail", {
+                          ...(brand.detail || {}),
+                          pullQuote: e.target.value,
+                        })
+                      }
+                      placeholder="Pull Quote"
+                    />
+                  </div>
+
+                  {/* CTA Label / Href */}
+                  <div className="md:col-span-3 grid md:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-muted-foreground mb-1 block">
+                        CTA Label
+                      </label>
+                      <Input
+                        value={brand.detail?.ctaLabel || ""}
+                        onChange={(e) =>
+                          updateBrand(idx, "detail", {
+                            ...(brand.detail || {}),
+                            ctaLabel: e.target.value,
+                          })
+                        }
+                        placeholder="CTA Label"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground mb-1 block">
+                        CTA Href
+                      </label>
+                      <Input
+                        value={brand.detail?.ctaHref || ""}
+                        onChange={(e) =>
+                          updateBrand(idx, "detail", {
+                            ...(brand.detail || {}),
+                            ctaHref: e.target.value,
+                          })
+                        }
+                        placeholder="/brands/brand-slug"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Impact Description */}
+                  <div className="md:col-span-3">
+                    <label className="text-xs text-muted-foreground mb-1 block">
+                      Impact Description
+                    </label>
+                    <Textarea
+                      value={brand.detail?.impactDescription || ""}
+                      onChange={(e) =>
+                        updateBrand(idx, "detail", {
+                          ...(brand.detail || {}),
+                          impactDescription: e.target.value,
+                        })
+                      }
+                      placeholder="Impact description"
+                    />
+                  </div>
+
+                  {/* Remove Brand Button */}
+                  <div className="flex justify-end md:col-span-3">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onRemoveBrand(idx)}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+
+              {!data.brands.length && (
+                <p className="text-sm text-muted-foreground">No brands yet.</p>
+              )}
+
+              <div className="flex justify-end">
+                <Button variant="outline" onClick={onAddBrand}>
+                  <Plus className="w-4 h-4 mr-2" /> Add brand
                 </Button>
               </div>
             </CardContent>
@@ -202,7 +613,9 @@ const BrandEditor = ({
           <Card className="bg-card/70 border-border/60">
             <CardHeader>
               <CardTitle>Preview</CardTitle>
-              <CardDescription>Static preview of the brand highlights.</CardDescription>
+              <CardDescription>
+                Static preview of the brand highlights.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="text-sm">
@@ -212,12 +625,21 @@ const BrandEditor = ({
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {data.brands.map((brand) => (
-                  <div key={brand.slug || brand.name} className="rounded-xl border border-border/60 bg-card/80 p-3 space-y-2">
-                    <img src={brand.image} alt={brand.name} className="w-full h-24 object-cover rounded-lg" />
+                  <div
+                    key={brand.slug || brand.name}
+                    className="rounded-xl border border-border/60 bg-card/80 p-3 space-y-2"
+                  >
+                    <img
+                      src={brand.image}
+                      alt={brand.name}
+                      className="w-full h-24 object-cover rounded-lg"
+                    />
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="font-semibold">{brand.name}</div>
-                        <div className="text-xs text-muted-foreground">{brand.relationship}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {brand.relationship}
+                        </div>
                       </div>
                       <Badge variant="secondary">{brand.category}</Badge>
                     </div>
@@ -237,10 +659,16 @@ const BrandEditor = ({
           <Card className="bg-card/80 border-border/70">
             <CardHeader>
               <CardTitle>Actions</CardTitle>
-              <CardDescription>Restore defaults or publish changes for brand highlights.</CardDescription>
+              <CardDescription>
+                Restore defaults or publish changes for brand highlights.
+              </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap justify-end gap-3">
-              <Button variant="outline" onClick={onRestore} disabled={saving || loading}>
+              <Button
+                variant="outline"
+                onClick={onRestore}
+                disabled={saving || loading}
+              >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Restore defaults
               </Button>

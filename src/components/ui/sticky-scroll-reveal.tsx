@@ -14,7 +14,10 @@ interface StickyScrollProps {
   }[];
   contentClassName?: string;
   showStepLabels?: boolean;
-  onItemSelect?: (item: StickyScrollProps["content"][number], index: number) => void;
+  onItemSelect?: (
+    item: StickyScrollProps["content"][number],
+    index: number,
+  ) => void;
 }
 
 export const StickyScrollReveal = ({
@@ -41,10 +44,7 @@ export const StickyScrollReveal = ({
   if (!cardLength) return null;
 
   return (
-    <section
-      ref={containerRef}
-      className="relative py-16 md:py-24"
-    >
+    <section ref={containerRef} className="relative py-16 md:py-24">
       {/* Soft background glow */}
       <motion.div
         className="pointer-events-none absolute inset-0 -z-10"
@@ -82,7 +82,11 @@ export const StickyScrollReveal = ({
                       animate={{
                         scale: isActive ? 1.1 : 1,
                       }}
-                      transition={{ type: "spring", stiffness: 260, damping: 18 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 18,
+                      }}
                     >
                       <div className="h-5 w-5 rounded-full border-2 border-primary/60 bg-background shadow-sm" />
                       {isActive && (
@@ -108,7 +112,9 @@ export const StickyScrollReveal = ({
                   {/* Card content */}
                   <motion.div
                     className={`rounded-2xl border bg-card/60 backdrop-blur-sm px-4 py-4 md:px-6 md:py-6 shadow-sm transition-shadow ${
-                      isActive ? "border-primary/60 shadow-lg shadow-primary/10" : "border-border/60"
+                      isActive
+                        ? "border-primary/60 shadow-lg shadow-primary/10"
+                        : "border-border/60"
                     }`}
                     animate={{
                       scale: isActive ? 1.02 : 1,
@@ -129,28 +135,28 @@ export const StickyScrollReveal = ({
                     </motion.p>
 
                     {/* Optional subtle "step" label */}
-                <div className="mt-3 flex items-center gap-2">
-                  {showStepLabels && (
-                    <>
-                      <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-primary">
-                        Step {index + 1}
-                      </span>
-                      {isActive && (
-                        <motion.span
-                          className="text-[11px] text-muted-foreground"
-                          initial={{ opacity: 0, x: -6 }}
-                          animate={{ opacity: 1, x: 0 }}
-                        >
-                          Currently viewing
-                        </motion.span>
+                    <div className="mt-3 flex items-center gap-2">
+                      {showStepLabels && (
+                        <>
+                          <span className="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-primary">
+                            Step {index + 1}
+                          </span>
+                          {isActive && (
+                            <motion.span
+                              className="text-[11px] text-muted-foreground"
+                              initial={{ opacity: 0, x: -6 }}
+                              animate={{ opacity: 1, x: 0 }}
+                            >
+                              Currently viewing
+                            </motion.span>
+                          )}
+                        </>
                       )}
-                    </>
-                  )}
-                </div>
-              </motion.div>
-            </motion.article>
-          );
-        })}
+                    </div>
+                  </motion.div>
+                </motion.article>
+              );
+            })}
           </div>
         </div>
 
@@ -158,7 +164,7 @@ export const StickyScrollReveal = ({
         <div className="relative">
           <div className="lg:sticky lg:top-24">
             <motion.div
-              className="relative h-[260px] md:h-[360px] rounded-3xl border border-border/70 bg-gradient-to-br from-background via-card to-background/80 overflow-hidden shadow-lg"
+              className="sticky h-[260px] md:h-[360px] rounded-3xl border border-border/70 bg-gradient-to-br from-background via-card to-background/80 overflow-hidden shadow-lg"
               style={{ y: panelY }}
               transition={{ type: "spring", stiffness: 140, damping: 20 }}
             >
