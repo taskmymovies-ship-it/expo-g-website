@@ -70,7 +70,9 @@ const StallsMosaicSection = ({
         )}
       </div>
 
+      <div className="mb-16 md:mb-24">
       <ParallaxGridScroll images={images} />
+      </div>
 
       {(cta || stats.length > 0) && (
         <div className="container-custom pb-16 md:pb-24">
