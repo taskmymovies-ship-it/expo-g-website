@@ -47,7 +47,8 @@ const payloadSchema = z.object({
         ),
     })
     .default({}),
-  testimonials: z.array(testimonialSchema),
+
+  testimonials: z.array(testimonialSchema).default([]),
 });
 
 const listQuerySchema = z.object({
@@ -159,6 +160,26 @@ export default async function testimonialsRoutes(app: FastifyInstance) {
       );
       request.log.info("testimonials.update success");
       return parsed.data;
+    },
+  );
+
+  app.post(
+    "/testimonials/restore",
+    { preHandler: [app.authenticate] },
+    async (request, reply) => {
+      const db = await getDb();
+      const col = db.collection("testimonials");
+
+      const defaults = payloadSchema.parse({});
+
+      await col.updateOne(
+        { key: "default" },
+        { $set: { key: "default", ...defaults } },
+        { upsert: true },
+      );
+
+      request.log.info("testimonials.restore success");
+      return defaults;
     },
   );
 

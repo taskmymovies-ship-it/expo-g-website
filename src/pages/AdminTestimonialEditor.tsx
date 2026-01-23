@@ -16,6 +16,17 @@ const AdminTestimonialEditor = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const getAccessToken = async (base: string) => {
+    const token = localStorage.getItem("admin_access_token");
+    if (token) return token;
+    return refreshAccessToken(base);
+  };
+
+const getAuthHeaders = () => {
+  const token = localStorage.getItem("admin_access_token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
   const load = async () => {
     setLoading(true);
     setError("");
@@ -53,11 +64,15 @@ const AdminTestimonialEditor = () => {
     try {
       const res = await fetch(`${base}/testimonials`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
         body: JSON.stringify(data),
-        credentials: "include",
       });
+
       if (!res.ok) throw new Error("Failed to save testimonials");
+
       setSuccess("Testimonials updated");
     } catch (err: any) {
       setError(err.message || "Unable to save testimonials");
@@ -66,27 +81,51 @@ const AdminTestimonialEditor = () => {
     }
   };
 
-  const restore = async () => {
-    setSaving(true);
-    setError("");
-    setSuccess("");
-    try {
-      const res = await fetch(`${base}/testimonials`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(defaultData),
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Restore failed");
-      setData(defaultData);
-      setSuccess("Defaults restored");
-    } catch (err: any) {
-      setError(err.message || "Unable to restore defaults");
-    } finally {
-      setSaving(false);
-    }
-  };
 
+const restore = async () => {
+  setSaving(true);
+  setError("");
+  setSuccess("");
+
+  try {
+    const token = await getAccessToken();
+    if (!token) throw new Error("Not authenticated.");
+
+    const res = await fetch(`${base}/testimonials/restore`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.status === 401) {
+      const refreshed = await refreshAccessToken();
+      if (!refreshed) throw new Error("Session expired. Please login again.");
+
+      const retry = await fetch(`${base}/testimonials/restore`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${refreshed}`,
+        },
+      });
+
+      if (!retry.ok) throw new Error("Restore failed");
+      const payload = (await retry.json()) as Payload;
+      setData(payload);
+    } else {
+      if (!res.ok) throw new Error("Restore failed");
+      const payload = (await res.json()) as Payload;
+      setData(payload);
+    }
+
+    setSuccess("Testimonials restored");
+  } catch (err: any) {
+    setError(err.message || "Unable to restore testimonials");
+  } finally {
+    setSaving(false);
+  }
+};
+  
   const addTestimonial = () => {
     const id = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
       ? crypto.randomUUID()
