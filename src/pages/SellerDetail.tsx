@@ -5,7 +5,10 @@ import { FloatingNavbar } from "@/components/ui/floating-navbar";
 import { BackgroundBeams } from "@/components/ui/background-effects";
 import Footer from "@/components/Footer";
 import { navItems } from "@/data/expo-data";
-import { sellerTestimonials, type SellerTestimonial } from "@/data/seller-testimonials";
+import {
+  sellerTestimonials,
+  type SellerTestimonial,
+} from "@/data/seller-testimonials";
 import { StickyScrollReveal } from "@/components/ui/sticky-scroll-reveal";
 import { useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
@@ -25,12 +28,16 @@ type SellerDetailStory = {
   ctaHref?: string;
 };
 
-type SellerDetailItem = SellerTestimonial & { detail?: SellerDetailStory; variants?: { key: string; path: string }[] };
+type SellerDetailItem = SellerTestimonial & {
+  detail?: SellerDetailStory;
+  variants?: { key: string; path: string }[];
+};
 
 const defaultCopy = {
   moreEyebrow: "More sellers",
   moreTitle: "Explore more seller stories",
-  moreDescription: "Scroll to reveal more seller journeys—each card updates the preview with their imagery and outcomes.",
+  moreDescription:
+    "Scroll to reveal more seller journeys—each card updates the preview with their imagery and outcomes.",
 };
 
 const SellerDetail = () => {
@@ -41,13 +48,19 @@ const SellerDetail = () => {
   const [loading, setLoading] = useState(true);
   const [copy, setCopy] = useState(defaultCopy);
   const base = import.meta.env.VITE_API_BASE_URL || "";
-  const mediaBase = (import.meta.env.VITE_MEDIA_BASE_URL || "").replace(/\/$/, "");
+  const mediaBase = (import.meta.env.VITE_MEDIA_BASE_URL || "").replace(
+    /\/$/,
+    "",
+  );
   const resolveMedia = (path?: string) => {
     if (!path) return "";
     if (/^https?:\/\//i.test(path)) return path;
     return mediaBase ? `${mediaBase}/${path}` : path;
   };
-  const pickVariant = (variants?: { key: string; path: string }[], preferred: string[] = []) => {
+  const pickVariant = (
+    variants?: { key: string; path: string }[],
+    preferred: string[] = [],
+  ) => {
     if (!variants?.length) return undefined;
     for (const key of preferred) {
       const hit = variants.find((v) => v.key === key);
@@ -81,7 +94,9 @@ const SellerDetail = () => {
         const res = await fetch(`${base}/sellers/list?limit=12`);
         if (!res.ok) throw new Error("List fetch failed");
         const data = await res.json();
-        setMoreSellers((data.data || []).filter((s: SellerDetailItem) => s.id !== id));
+        setMoreSellers(
+          (data.data || []).filter((s: SellerDetailItem) => s.id !== id),
+        );
       } catch {
         setMoreSellers(sellerTestimonials.filter((s) => s.id !== id));
       }
@@ -129,7 +144,7 @@ const SellerDetail = () => {
       pickVariant(story.heroVariants, ["main", "hero", "medium"]) ||
         story.heroImage ||
         pickVariant(seller.variants, ["main", "medium", "thumb"]) ||
-        seller.image
+        seller.image,
     ) || "";
 
   return (
@@ -146,7 +161,10 @@ const SellerDetail = () => {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
         <div className="container-custom relative z-10 space-y-6">
-          <Link to="/sellers" className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors">
+          <Link
+            to="/sellers"
+            className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors"
+          >
             <ArrowLeft className="w-4 h-4" />
             Back to sellers
           </Link>
@@ -155,8 +173,12 @@ const SellerDetail = () => {
             <Badge>{seller.role}</Badge>
           </div>
           <div className="max-w-4xl space-y-4">
-            <h1 className="text-4xl md:text-6xl font-display font-bold leading-tight">{story.headline || seller.name}</h1>
-            <p className="text-lg md:text-xl text-muted-foreground">{story.summary || seller.quote}</p>
+            <h1 className="text-4xl md:text-6xl font-display font-bold leading-tight">
+              {story.headline || seller.name}
+            </h1>
+            <p className="text-lg md:text-xl text-muted-foreground">
+              {story.summary || seller.quote}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="outline" className="text-base px-4 py-2">
@@ -186,10 +208,18 @@ const SellerDetail = () => {
                   viewport={{ once: true, margin: "-50px" }}
                   className="grid md:grid-cols-5 gap-6 md:gap-10 items-start"
                 >
-                  <div className={`md:col-span-2 space-y-3 ${isEven ? "" : "md:order-last"}`}>
-                    <div className="text-sm uppercase tracking-[0.2em] text-primary">Chapter {index + 1}</div>
-                    <h2 className="text-2xl md:text-3xl font-display font-semibold">{section.title}</h2>
-                    <p className="text-muted-foreground leading-relaxed">{section.body}</p>
+                  <div
+                    className={`md:col-span-2 space-y-3 ${isEven ? "" : "md:order-last"}`}
+                  >
+                    <div className="text-sm uppercase tracking-[0.2em] text-primary">
+                      Chapter {index + 1}
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-display font-semibold">
+                      {section.title}
+                    </h2>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {section.body}
+                    </p>
                   </div>
                   <div className="md:col-span-3">
                     <motion.div
@@ -211,7 +241,7 @@ const SellerDetail = () => {
                 </motion.div>
               );
             })}
-            </div>
+          </div>
 
           <div className="space-y-6 sticky top-28">
             <div className="glass rounded-2xl p-6 border border-border/70 space-y-4">
@@ -220,8 +250,13 @@ const SellerDetail = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {(story.metrics || []).map((metric) => (
-                  <div key={metric.label} className="rounded-xl border border-border/60 p-4 bg-card/70">
-                    <div className="text-2xl font-display font-semibold">{metric.value}</div>
+                  <div
+                    key={metric.label}
+                    className="rounded-xl border border-border/60 p-4 bg-card/70"
+                  >
+                    <div className="text-2xl font-display font-semibold">
+                      {metric.value}
+                    </div>
                     <div className="text-xs uppercase tracking-wide text-muted-foreground mt-1">
                       {metric.label}
                     </div>
@@ -246,20 +281,35 @@ const SellerDetail = () => {
       <section className="section-padding bg-muted/20">
         <div className="container-custom space-y-8">
           <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.3em] text-primary/80">{copy.moreEyebrow}</p>
-            <h2 className="text-2xl md:text-3xl font-display font-semibold">{copy.moreTitle}</h2>
+            <p className="text-xs uppercase tracking-[0.3em] text-primary/80">
+              {copy.moreEyebrow}
+            </p>
+            <h2 className="text-2xl md:text-3xl font-display font-semibold">
+              {copy.moreTitle}
+            </h2>
             <p className="text-muted-foreground text-sm md:text-base">
               {copy.moreDescription}
             </p>
           </div>
           <StickyScrollReveal
-            content={(moreSellers.length ? moreSellers : sellerTestimonials.filter((s) => s.id !== id)).map((item, idx) => ({
+            content={(moreSellers.length
+              ? moreSellers
+              : sellerTestimonials.filter((s) => s.id !== id)
+            ).map((item, idx) => ({
               title: item.name,
               description: item.outcome || item.quote,
               image: resolveMedia(
-                pickVariant(item.detail?.heroVariants, ["main", "hero", "medium"]) ||
-                  pickVariant((item as any).variants, ["main", "medium", "thumb"]) ||
-                  item.image
+                pickVariant(item.detail?.heroVariants, [
+                  "main",
+                  "hero",
+                  "medium",
+                ]) ||
+                  pickVariant((item as any).variants, [
+                    "main",
+                    "medium",
+                    "thumb",
+                  ]) ||
+                  item.image,
               ),
               id: item.id,
               content: (
@@ -274,11 +324,20 @@ const SellerDetail = () => {
                         {item.role}
                       </span>
                     </div>
-                    <h3 className="text-2xl md:text-3xl font-display font-semibold drop-shadow-sm">{item.name}</h3>
-                    <p className="text-sm text-white/85 line-clamp-3">{item.quote}</p>
+                    <h3 className="text-2xl md:text-3xl font-display font-semibold drop-shadow-sm">
+                      {item.name}
+                    </h3>
+                    <p className="text-sm text-white/85 line-clamp-3">
+                      {item.quote}
+                    </p>
                     <div className="flex items-center justify-between text-xs text-white/70">
                       <span>#{idx + 1}</span>
-                      <Button asChild variant="secondary" size="sm" className="rounded-full px-4 py-2">
+                      <Button
+                        asChild
+                        variant="secondary"
+                        size="sm"
+                        className="rounded-full px-4 py-2"
+                      >
                         <Link to={`/sellers/${item.id}`}>View seller</Link>
                       </Button>
                     </div>

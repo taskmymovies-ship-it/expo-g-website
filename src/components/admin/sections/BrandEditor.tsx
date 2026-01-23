@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, RotateCcw, Save } from "lucide-react";
-import { useState } from "react";
 
 export type BrandItem = {
   slug: string;
@@ -61,11 +60,9 @@ interface BrandEditorProps {
   onRestore: () => void;
   saving: boolean;
   loading: boolean;
-  successMsg?: string;
 }
 
 const BrandEditor = ({
-  successMsg,
   data,
   onChange,
   onAddBrand,
@@ -91,11 +88,6 @@ const BrandEditor = ({
   return (
     <div id="brands" className="pt-10 space-y-4">
       <div className="text-center space-y-2">
-        {successMsg && (
-          <div className="mb-4 text-sm text-green-600 bg-green-50 border border-green-200 px-3 py-2 rounded-lg">
-            {successMsg}
-          </div>
-        )}
         <h2 className="text-2xl md:text-3xl font-display font-semibold">
           Brand Highlights Editor
         </h2>

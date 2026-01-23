@@ -3,69 +3,201 @@ import { z } from "zod";
 import { ObjectId } from "mongodb";
 import { getDb } from "../../db/mongo";
 
+// const brandSchema = z.object({
+//   slug: z.string().min(1),
+//   name: z.string().min(1),
+//   logo: z.string().min(1),
+//   relationship: z.string().default(""),
+//   category: z.string().default(""),
+//   image: z.string().min(1),
+//   variants: z
+//     .array(
+//       z.object({
+//         key: z.string().min(1),
+//         path: z.string().min(1),
+//         fileName: z.string().optional(),
+//         format: z.string().optional(),
+//         width: z.number().optional(),
+//         height: z.number().optional(),
+//         size: z.number().optional(),
+//       }),
+//     )
+//     .optional(),
+//   summary: z.string().min(5, "Summary is required"),
+//   detail: z.object({
+//     headline: z.string().min(5, "Headline is required"),
+//     summary: z.string().min(50, "Detail summary is required"),
+//     heroImage: z.string().min(1, "Hero image is required"),
+
+//     heroVariants: z
+//       .array(
+//         z.object({
+//           key: z.string().min(1),
+//           path: z.string().min(1),
+//           fileName: z.string().optional(),
+//           format: z.string().optional(),
+//           width: z.number().optional(),
+//           height: z.number().optional(),
+//           size: z.number().optional(),
+//         }),
+//       )
+//       .optional(),
+
+//     highlights: z
+//       .array(
+//         z.object({
+//           title: z.string().min(1),
+//           body: z.string().min(10),
+//         }),
+//       )
+//       .min(1, "At least one highlight is required"),
+
+//     metrics: z
+//       .array(
+//         z.object({
+//           label: z.string().min(1),
+//           value: z.string().min(1),
+//         }),
+//       )
+//       .min(1, "At least one metric is required"),
+
+//     pullQuote: z.string().optional(),
+//     ctaLabel: z.string().optional(),
+//     ctaHref: z.string().optional(),
+//     impactDescription: z.string().optional(),
+//   }),
+// });
+
+// const brandSchema = z.object({
+//   slug: z.string().min(1),
+//   name: z.string().min(1),
+
+//   logo: z.string().optional().default(""),
+//   relationship: z.string().optional().default(""),
+//   category: z.string().optional().default(""),
+
+//   image: z.string().min(1),
+
+//   variants: z
+//     .array(
+//       z.object({
+//         key: z.string().min(1),
+//         path: z.string().optional().default(""),
+//         fileName: z.string().optional(),
+//         format: z.string().optional(),
+//         width: z.number().optional(),
+//         height: z.number().optional(),
+//         size: z.number().optional(),
+//       }),
+//     )
+//     .optional()
+//     .default([]),
+
+//   summary: z.string().min(5),
+
+//   detail: z.object({
+//     headline: z.string().min(3),
+//     summary: z.string().min(10),
+//     heroImage: z.string().min(1),
+
+//     heroVariants: z
+//       .array(
+//         z.object({
+//           key: z.string().min(1),
+//           path: z.string().optional().default(""),
+//           fileName: z.string().optional(),
+//           format: z.string().optional(),
+//           width: z.number().optional(),
+//           height: z.number().optional(),
+//           size: z.number().optional(),
+//         }),
+//       )
+//       .optional()
+//       .default([]),
+
+//     highlights: z
+//       .array(
+//         z.object({
+//           title: z.string().min(1),
+//           body: z.string().min(5),
+//         }),
+//       )
+//       .optional()
+//       .default([]),
+
+//     metrics: z
+//       .array(
+//         z.object({
+//           label: z.string().min(1),
+//           value: z.string().min(1),
+//         }),
+//       )
+//       .optional()
+//       .default([]),
+
+//     pullQuote: z.string().optional(),
+//     ctaLabel: z.string().optional(),
+//     ctaHref: z.string().optional(),
+//     impactDescription: z.string().optional(),
+//   }),
+// });
+
+const mediaVariantSchema = z.object({
+  key: z.string().optional().default(""),
+  path: z.string().optional().default(""),
+  fileName: z.string().optional(),
+  format: z.string().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+  size: z.number().optional(),
+});
+
 const brandSchema = z.object({
-  slug: z.string().min(1),
-  name: z.string().min(1),
-  logo: z.string().min(1),
-  relationship: z.string().default(""),
-  category: z.string().default(""),
-  image: z.string().min(1),
-  variants: z
-    .array(
-      z.object({
-        key: z.string().min(1),
-        path: z.string().min(1),
-        fileName: z.string().optional(),
-        format: z.string().optional(),
-        width: z.number().optional(),
-        height: z.number().optional(),
-        size: z.number().optional(),
-      }),
-    )
-    .optional(),
-  summary: z.string().min(5, "Summary is required"),
-  detail: z.object({
-    headline: z.string().min(5, "Headline is required"),
-    summary: z.string().min(50, "Detail summary is required"),
-    heroImage: z.string().min(1, "Hero image is required"),
+  slug: z.string().optional().default(""),
+  name: z.string().optional().default(""),
 
-    heroVariants: z
-      .array(
-        z.object({
-          key: z.string().min(1),
-          path: z.string().min(1),
-          fileName: z.string().optional(),
-          format: z.string().optional(),
-          width: z.number().optional(),
-          height: z.number().optional(),
-          size: z.number().optional(),
-        }),
-      )
-      .optional(),
+  logo: z.string().optional().default(""),
+  relationship: z.string().optional().default(""),
+  category: z.string().optional().default(""),
 
-    highlights: z
-      .array(
-        z.object({
-          title: z.string().min(1),
-          body: z.string().min(10),
-        }),
-      )
-      .min(1, "At least one highlight is required"),
+  image: z.string().optional().default(""),
 
-    metrics: z
-      .array(
-        z.object({
-          label: z.string().min(1),
-          value: z.string().min(1),
-        }),
-      )
-      .min(1, "At least one metric is required"),
+  variants: z.array(mediaVariantSchema).optional().default([]),
 
-    pullQuote: z.string().optional(),
-    ctaLabel: z.string().optional(),
-    ctaHref: z.string().optional(),
-    impactDescription: z.string().optional(),
-  }),
+  summary: z.string().optional().default(""),
+
+  detail: z
+    .object({
+      headline: z.string().optional().default(""),
+      summary: z.string().optional().default(""),
+      heroImage: z.string().optional().default(""),
+      heroVariants: z.array(mediaVariantSchema).optional().default([]),
+      highlights: z
+        .array(
+          z.object({
+            title: z.string().optional().default(""),
+            body: z.string().optional().default(""),
+          }),
+        )
+        .optional()
+        .default([]),
+      metrics: z
+        .array(
+          z.object({
+            label: z.string().optional().default(""),
+            value: z.string().optional().default(""),
+          }),
+        )
+        .optional()
+        .default([]),
+      pullQuote: z.string().optional().default(""),
+      ctaLabel: z.string().optional().default(""),
+      ctaHref: z.string().optional().default(""),
+      impactDescription: z.string().optional().default(""),
+    })
+    .passthrough()
+    .optional()
+    .default({}),
 });
 
 const brandsSchema = z.object({
@@ -278,12 +410,21 @@ export default async function brandsRoutes(app: FastifyInstance) {
         ...(request.body as object),
         slug,
       });
+      // if (!parse.success) {
+      //   request.log.warn(
+      //     { issues: parse.error.issues },
+      //     "brands.item validation failed",
+      //   );
+      //   return reply.code(400).send({ message: "Invalid payload" });
+      // }
+
       if (!parse.success) {
-        request.log.warn(
-          { issues: parse.error.issues },
-          "brands.item validation failed",
-        );
-        return reply.code(400).send({ message: "Invalid payload" });
+        console.log("ZOD ERROR:", JSON.stringify(parse.error.issues, null, 2));
+
+        return reply.code(400).send({
+          message: "Invalid payload",
+          issues: parse.error.issues,
+        });
       }
 
       const db = await getDb();

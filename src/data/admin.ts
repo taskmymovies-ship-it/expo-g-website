@@ -121,11 +121,23 @@ export const adminNavGroups = [
       { name: "Profile Config", href: "/admin/profile-config" },
     ],
   },
-  { label: "Analytics", items: [{ name: "Analytics", href: "/admin/analytics" }] },
+  {
+    label: "Analytics",
+    items: [{ name: "Analytics", href: "/admin/analytics" }],
+  },
   { label: "Users", items: [{ name: "Users", href: "/admin/users" }] },
-  { label: "Moderation", items: [{ name: "Comments", href: "/admin/comments" }, { name: "Likes", href: "/admin/likes" }] },
+  {
+    label: "Moderation",
+    items: [
+      { name: "Comments", href: "/admin/comments" },
+      { name: "Likes", href: "/admin/likes" },
+    ],
+  },
   { label: "Appearance", items: [{ name: "Theme", href: "/admin/theme" }] },
-  { label: "Media", items: [{ name: "Media Config", href: "/admin/media-config" }] },
+  {
+    label: "Media",
+    items: [{ name: "Media Config", href: "/admin/media-config" }],
+  },
   {
     label: "Home Editors",
     items: [
@@ -160,10 +172,34 @@ export const adminStats = [
 ];
 
 export const adminSections = [
-  { name: "Hero", status: "Live", updated: "Today", owner: "Aishwarya", notes: "Synced with New Home" },
-  { name: "Seller Voices", status: "Staged", updated: "Yesterday", owner: "Priyanshi", notes: "Pending QA" },
-  { name: "Co-Founders", status: "Live", updated: "2d ago", owner: "Sanjay", notes: "Copy locked" },
-  { name: "Gallery Highlights", status: "Draft", updated: "3d ago", owner: "Rohit", notes: "Needs assets" },
+  {
+    name: "Hero",
+    status: "Live",
+    updated: "Today",
+    owner: "Aishwarya",
+    notes: "Synced with New Home",
+  },
+  {
+    name: "Seller Voices",
+    status: "Staged",
+    updated: "Yesterday",
+    owner: "Priyanshi",
+    notes: "Pending QA",
+  },
+  {
+    name: "Co-Founders",
+    status: "Live",
+    updated: "2d ago",
+    owner: "Sanjay",
+    notes: "Copy locked",
+  },
+  {
+    name: "Gallery Highlights",
+    status: "Draft",
+    updated: "3d ago",
+    owner: "Rohit",
+    notes: "Needs assets",
+  },
 ];
 
 export const adminTasks = [
@@ -174,9 +210,24 @@ export const adminTasks = [
 ];
 
 export const adminGalleryQueue = [
-  { id: "GL-1021", title: "Immersive VR lane", owner: "Rohit", status: "In review" },
-  { id: "GL-1022", title: "Entrance arches — Goa", owner: "Aishwarya", status: "Awaiting assets" },
-  { id: "GL-1023", title: "Seller lanes — Pune", owner: "Sanjay", status: "Ready to publish" },
+  {
+    id: "GL-1021",
+    title: "Immersive VR lane",
+    owner: "Rohit",
+    status: "In review",
+  },
+  {
+    id: "GL-1022",
+    title: "Entrance arches — Goa",
+    owner: "Aishwarya",
+    status: "Awaiting assets",
+  },
+  {
+    id: "GL-1023",
+    title: "Seller lanes — Pune",
+    owner: "Sanjay",
+    status: "Ready to publish",
+  },
 ];
 
 export const adminUsers = [

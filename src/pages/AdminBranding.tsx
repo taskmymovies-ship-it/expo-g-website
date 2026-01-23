@@ -3,9 +3,27 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { adminNavLinks } from "@/data/admin";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle2, Image, Link as LinkIcon, Save } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Image,
+  Link as LinkIcon,
+  Save,
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type BrandingPayload = {
   logoUrl: string;
@@ -137,7 +155,10 @@ const AdminBranding = () => {
     <AdminLayout
       title="Platform Branding"
       description="Manage logos, favicons, sizing, and click-through targets used across the site."
-      navItems={adminNavLinks}
+      navItems={adminNavLinks.map((item) => ({
+        label: item.name,
+        href: item.href,
+      }))}
       sections={[{ id: "branding", label: "Branding" }]}
     >
       {error && (
@@ -159,92 +180,154 @@ const AdminBranding = () => {
             <Image className="w-4 h-4" />
             Logos
           </CardTitle>
-          <CardDescription>Provide light/dark variants and favicons via URLs or CDN uploads.</CardDescription>
+          <CardDescription>
+            Provide light/dark variants and favicons via URLs or CDN uploads.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid md:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">Primary logo URL</label>
-              <Input value={data.logoUrl} onChange={(e) => setData({ ...data, logoUrl: e.target.value })} />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Dark mode logo URL</label>
-              <Input value={data.darkLogoUrl} onChange={(e) => setData({ ...data, darkLogoUrl: e.target.value })} />
-            </div>
-          </div>
-          <div className="grid md:grid-cols-2 gap-3">
-            <div>
-              <label className="text-xs text-muted-foreground">Navbar logo URL</label>
-              <Input value={data.navLogoUrl} onChange={(e) => setData({ ...data, navLogoUrl: e.target.value })} />
-            </div>
-            <div>
-              <label className="text-xs text-muted-foreground">Navbar dark logo URL</label>
+              <label className="text-xs text-muted-foreground">
+                Primary logo URL
+              </label>
               <Input
-                value={data.navDarkLogoUrl}
-                onChange={(e) => setData({ ...data, navDarkLogoUrl: e.target.value })}
+                value={data.logoUrl}
+                onChange={(e) => setData({ ...data, logoUrl: e.target.value })}
+              />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">
+                Dark mode logo URL
+              </label>
+              <Input
+                value={data.darkLogoUrl}
+                onChange={(e) =>
+                  setData({ ...data, darkLogoUrl: e.target.value })
+                }
               />
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">Navbar width (px)</label>
+              <label className="text-xs text-muted-foreground">
+                Navbar logo URL
+              </label>
+              <Input
+                value={data.navLogoUrl}
+                onChange={(e) =>
+                  setData({ ...data, navLogoUrl: e.target.value })
+                }
+              />
+            </div>
+            <div>
+              <label className="text-xs text-muted-foreground">
+                Navbar dark logo URL
+              </label>
+              <Input
+                value={data.navDarkLogoUrl}
+                onChange={(e) =>
+                  setData({ ...data, navDarkLogoUrl: e.target.value })
+                }
+              />
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-muted-foreground">
+                Navbar width (px)
+              </label>
               <Input
                 type="number"
                 value={data.navWidth}
-                onChange={(e) => setData({ ...data, navWidth: Number(e.target.value || 0) })}
+                onChange={(e) =>
+                  setData({ ...data, navWidth: Number(e.target.value || 0) })
+                }
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Navbar height (px)</label>
+              <label className="text-xs text-muted-foreground">
+                Navbar height (px)
+              </label>
               <Input
                 type="number"
                 value={data.navHeight}
-                onChange={(e) => setData({ ...data, navHeight: Number(e.target.value || 0) })}
+                onChange={(e) =>
+                  setData({ ...data, navHeight: Number(e.target.value || 0) })
+                }
               />
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">Footer logo URL</label>
+              <label className="text-xs text-muted-foreground">
+                Footer logo URL
+              </label>
               <Input
                 value={data.footerLogoUrl}
-                onChange={(e) => setData({ ...data, footerLogoUrl: e.target.value })}
+                onChange={(e) =>
+                  setData({ ...data, footerLogoUrl: e.target.value })
+                }
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Footer dark logo URL</label>
+              <label className="text-xs text-muted-foreground">
+                Footer dark logo URL
+              </label>
               <Input
                 value={data.footerDarkLogoUrl}
-                onChange={(e) => setData({ ...data, footerDarkLogoUrl: e.target.value })}
+                onChange={(e) =>
+                  setData({ ...data, footerDarkLogoUrl: e.target.value })
+                }
               />
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">Footer width (px)</label>
+              <label className="text-xs text-muted-foreground">
+                Footer width (px)
+              </label>
               <Input
                 type="number"
                 value={data.footerWidth}
-                onChange={(e) => setData({ ...data, footerWidth: Number(e.target.value || 0) })}
+                onChange={(e) =>
+                  setData({ ...data, footerWidth: Number(e.target.value || 0) })
+                }
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Footer height (px)</label>
+              <label className="text-xs text-muted-foreground">
+                Footer height (px)
+              </label>
               <Input
                 type="number"
                 value={data.footerHeight}
-                onChange={(e) => setData({ ...data, footerHeight: Number(e.target.value || 0) })}
+                onChange={(e) =>
+                  setData({
+                    ...data,
+                    footerHeight: Number(e.target.value || 0),
+                  })
+                }
               />
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">Favicon URL</label>
-              <Input value={data.faviconUrl} onChange={(e) => setData({ ...data, faviconUrl: e.target.value })} />
+              <label className="text-xs text-muted-foreground">
+                Favicon URL
+              </label>
+              <Input
+                value={data.faviconUrl}
+                onChange={(e) =>
+                  setData({ ...data, faviconUrl: e.target.value })
+                }
+              />
             </div>
             <div>
               <label className="text-xs text-muted-foreground">Alt text</label>
-              <Input value={data.alt} onChange={(e) => setData({ ...data, alt: e.target.value })} />
+              <Input
+                value={data.alt}
+                onChange={(e) => setData({ ...data, alt: e.target.value })}
+              />
             </div>
           </div>
         </CardContent>
@@ -253,13 +336,18 @@ const AdminBranding = () => {
       <Card className="bg-card/70 border-border/60 mt-4">
         <CardHeader>
           <CardTitle>Sizing & Style</CardTitle>
-          <CardDescription>Control display size, padding, and background when rendered in navs.</CardDescription>
+          <CardDescription>
+            Control display size, padding, and background when rendered in navs.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid md:grid-cols-4 gap-3">
             <div>
               <label className="text-xs text-muted-foreground">Logo type</label>
-              <Select value={data.logoType} onValueChange={(v) => setData({ ...data, logoType: v })}>
+              <Select
+                value={data.logoType}
+                onValueChange={(v) => setData({ ...data, logoType: v })}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
@@ -271,34 +359,57 @@ const AdminBranding = () => {
               </Select>
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Width (px)</label>
+              <label className="text-xs text-muted-foreground">
+                Width (px)
+              </label>
               <Input
                 type="number"
                 value={data.width}
-                onChange={(e) => setData({ ...data, width: Number(e.target.value || 0) })}
+                onChange={(e) =>
+                  setData({ ...data, width: Number(e.target.value || 0) })
+                }
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Height (px)</label>
+              <label className="text-xs text-muted-foreground">
+                Height (px)
+              </label>
               <Input
                 type="number"
                 value={data.height}
-                onChange={(e) => setData({ ...data, height: Number(e.target.value || 0) })}
+                onChange={(e) =>
+                  setData({ ...data, height: Number(e.target.value || 0) })
+                }
               />
             </div>
             <div>
-              <label className="text-xs text-muted-foreground">Padding (CSS)</label>
-              <Input value={data.padding} onChange={(e) => setData({ ...data, padding: e.target.value })} />
+              <label className="text-xs text-muted-foreground">
+                Padding (CSS)
+              </label>
+              <Input
+                value={data.padding}
+                onChange={(e) => setData({ ...data, padding: e.target.value })}
+              />
             </div>
           </div>
           <div className="grid md:grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-muted-foreground">Background</label>
-              <Input value={data.background} onChange={(e) => setData({ ...data, background: e.target.value })} />
+              <label className="text-xs text-muted-foreground">
+                Background
+              </label>
+              <Input
+                value={data.background}
+                onChange={(e) =>
+                  setData({ ...data, background: e.target.value })
+                }
+              />
             </div>
             <div>
               <label className="text-xs text-muted-foreground">Logo href</label>
-              <Input value={data.href} onChange={(e) => setData({ ...data, href: e.target.value })} />
+              <Input
+                value={data.href}
+                onChange={(e) => setData({ ...data, href: e.target.value })}
+              />
             </div>
           </div>
         </CardContent>
@@ -310,12 +421,19 @@ const AdminBranding = () => {
             <LinkIcon className="w-4 h-4" />
             Usage guidance
           </CardTitle>
-          <CardDescription>Provide the destination link used wherever the logo is clickable.</CardDescription>
+          <CardDescription>
+            Provide the destination link used wherever the logo is clickable.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
           <div>
-            <label className="text-xs text-muted-foreground">Click-through URL</label>
-            <Input value={data.href} onChange={(e) => setData({ ...data, href: e.target.value })} />
+            <label className="text-xs text-muted-foreground">
+              Click-through URL
+            </label>
+            <Input
+              value={data.href}
+              onChange={(e) => setData({ ...data, href: e.target.value })}
+            />
           </div>
         </CardContent>
       </Card>

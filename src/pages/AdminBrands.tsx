@@ -6,13 +6,42 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { AlertCircle, CheckCircle2, Plus, Save, Trash2, Search, ChevronDown } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import MediaUploadModal, { type MediaUploadResult } from "@/components/admin/MediaUploadModal";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Plus,
+  Save,
+  Trash2,
+  Search,
+  ChevronDown,
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import MediaUploadModal, {
+  type MediaUploadResult,
+} from "@/components/admin/MediaUploadModal";
 import { toast } from "@/components/ui/sonner";
 
-type Variant = { key: string; path?: string; fileName?: string; format?: string; width?: number; height?: number; size?: number };
+type Variant = {
+  key: string;
+  path?: string;
+  fileName?: string;
+  format?: string;
+  width?: number;
+  height?: number;
+  size?: number;
+};
 
 type BrandItem = {
   slug: string;
@@ -39,7 +68,12 @@ type BrandItem = {
 
 type BrandsResponse = {
   data: BrandItem[];
-  pagination?: { page: number; pageSize: number; total: number; totalPages: number };
+  pagination?: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
   filters?: { categories: string[] };
 };
 
@@ -61,14 +95,20 @@ const normalizeItem = (item: any): BrandItem => ({
   variants:
     item.variants && item.variants.length
       ? item.variants
-      : defaultVariants.map((v) => ({ ...v, path: v.key === "main" ? item.image ?? "" : "" })),
+      : defaultVariants.map((v) => ({
+          ...v,
+          path: v.key === "main" ? (item.image ?? "") : "",
+        })),
   detail: item.detail
     ? {
         ...item.detail,
         heroVariants:
           item.detail.heroVariants && item.detail.heroVariants.length
             ? item.detail.heroVariants
-            : defaultVariants.map((v) => ({ ...v, path: v.key === "main" ? item.detail.heroImage ?? "" : "" })),
+            : defaultVariants.map((v) => ({
+                ...v,
+                path: v.key === "main" ? (item.detail.heroImage ?? "") : "",
+              })),
       }
     : undefined,
 });
@@ -82,9 +122,11 @@ const AdminBrands = () => {
 
   const [items, setItems] = useState<BrandItem[]>([]);
   const [heroBadge, setHeroBadge] = useState("Partner Brands");
-  const [heroTitle, setHeroTitle] = useState("Brands that trust ICE Exhibitions");
+  const [heroTitle, setHeroTitle] = useState(
+    "Brands that trust ICE Exhibitions",
+  );
   const [heroSubheading, setHeroSubheading] = useState(
-    "Explore our partner roster—long-term collaborators, headline sponsors, and innovators who shaped the expo experience."
+    "Explore our partner roster—long-term collaborators, headline sponsors, and innovators who shaped the expo experience.",
   );
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -97,19 +139,28 @@ const AdminBrands = () => {
   const [categories, setCategories] = useState<string[]>(["All"]);
   const [category, setCategory] = useState<string>("All");
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState<"newest" | "oldest" | "name-asc" | "name-desc">("newest");
-  const [uploadTarget, setUploadTarget] = useState<{ idx: number; field: "image" | "hero" } | null>(null);
+  const [sort, setSort] = useState<
+    "newest" | "oldest" | "name-asc" | "name-desc"
+  >("newest");
+  const [uploadTarget, setUploadTarget] = useState<{
+    idx: number;
+    field: "image" | "hero";
+  } | null>(null);
   const [originalMap, setOriginalMap] = useState<Record<string, string>>({});
   const [pendingDeletes, setPendingDeletes] = useState<string[]>([]);
 
-  const loadBrands = async (targetPage = 1, opts?: { category?: string; search?: string }) => {
+  const loadBrands = async (
+    targetPage = 1,
+    opts?: { category?: string; search?: string },
+  ) => {
     const base = import.meta.env.VITE_API_BASE_URL || "";
     setLoading(true);
     setError("");
     const params = new URLSearchParams();
     params.set("page", String(targetPage));
     params.set("pageSize", String(pageSize));
-    if (opts?.category && opts.category !== "All") params.set("category", opts.category);
+    if (opts?.category && opts.category !== "All")
+      params.set("category", opts.category);
     if (opts?.search) params.set("search", opts.search);
     params.set("sort", sort);
 
@@ -164,7 +215,8 @@ const AdminBrands = () => {
       ...prev,
     ]);
 
-  const removeItem = (idx: number) => setItems((prev) => prev.filter((_, i) => i !== idx));
+  const removeItem = (idx: number) =>
+    setItems((prev) => prev.filter((_, i) => i !== idx));
 
   const addHighlight = (idx: number) =>
     setItems((prev) => {
@@ -172,12 +224,20 @@ const AdminBrands = () => {
       const detail = next[idx].detail || {};
       next[idx] = {
         ...next[idx],
-        detail: { ...detail, highlights: [...(detail.highlights || []), { title: "", body: "" }] },
+        detail: {
+          ...detail,
+          highlights: [...(detail.highlights || []), { title: "", body: "" }],
+        },
       };
       return next;
     });
 
-  const updateHighlight = (idx: number, hIdx: number, key: "title" | "body", value: string) =>
+  const updateHighlight = (
+    idx: number,
+    hIdx: number,
+    key: "title" | "body",
+    value: string,
+  ) =>
     setItems((prev) => {
       const next = [...prev];
       const detail = next[idx].detail || { highlights: [] };
@@ -196,7 +256,12 @@ const AdminBrands = () => {
       return next;
     });
 
-  const updateMetric = (idx: number, mIdx: number, key: "label" | "value", value: string) =>
+  const updateMetric = (
+    idx: number,
+    mIdx: number,
+    key: "label" | "value",
+    value: string,
+  ) =>
     setItems((prev) => {
       const next = [...prev];
       const detail = next[idx].detail || { metrics: [] };
@@ -212,7 +277,10 @@ const AdminBrands = () => {
       const detail = next[idx].detail || {};
       next[idx] = {
         ...next[idx],
-        detail: { ...detail, metrics: [...(detail.metrics || []), { label: "", value: "" }] },
+        detail: {
+          ...detail,
+          metrics: [...(detail.metrics || []), { label: "", value: "" }],
+        },
       };
       return next;
     });
@@ -286,7 +354,11 @@ const AdminBrands = () => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authToken}`,
           },
-          body: JSON.stringify({ badge: heroBadge, title: heroTitle, subheading: heroSubheading }),
+          body: JSON.stringify({
+            badge: heroBadge,
+            title: heroTitle,
+            subheading: heroSubheading,
+          }),
         });
       let res = await attempt(token);
       if (res.status === 401) {
@@ -334,25 +406,40 @@ const AdminBrands = () => {
       for (const item of changedItems) {
         const { _id, createdAt, updatedAt, ...rest } = item as any;
 
-        const slug = rest.slug && rest.slug.trim().length ? rest.slug : slugify(rest.name || "");
+        const slug =
+          rest.slug && rest.slug.trim().length
+            ? rest.slug
+            : slugify(rest.name || "");
         if (!slug) {
-          throw new Error("Slug is required. Please provide a slug or name for each brand.");
+          throw new Error(
+            "Slug is required. Please provide a slug or name for each brand.",
+          );
         }
 
         const cleanedVariants =
           rest.variants
-            ?.map((v: Variant) => ({ ...v, path: (v.path || v.fileName || "").trim(), fileName: (v.fileName || "").trim() }))
+            ?.map((v: Variant) => ({
+              ...v,
+              path: (v.path || v.fileName || "").trim(),
+              fileName: (v.fileName || "").trim(),
+            }))
             .filter((v: Variant) => v.path || v.fileName) ?? [];
         const cleanedHeroVariants =
           rest.detail?.heroVariants
-            ?.map((v: Variant) => ({ ...v, path: (v.path || v.fileName || "").trim(), fileName: (v.fileName || "").trim() }))
+            ?.map((v: Variant) => ({
+              ...v,
+              path: (v.path || v.fileName || "").trim(),
+              fileName: (v.fileName || "").trim(),
+            }))
             .filter((v: Variant) => v.path || v.fileName) ?? [];
 
         const payload = {
           ...rest,
           slug,
           variants: cleanedVariants,
-          detail: rest.detail ? { ...rest.detail, heroVariants: cleanedHeroVariants } : undefined,
+          detail: rest.detail
+            ? { ...rest.detail, heroVariants: cleanedHeroVariants }
+            : undefined,
         };
 
         const attempt = async (authToken: string) =>
@@ -367,7 +454,8 @@ const AdminBrands = () => {
         let res = await attempt(token);
         if (res.status === 401) {
           const refreshed = await refreshAccessToken(base);
-          if (!refreshed) throw new Error("Session expired. Please login again.");
+          if (!refreshed)
+            throw new Error("Session expired. Please login again.");
           res = await attempt(refreshed);
         }
         if (!res.ok) {
@@ -376,11 +464,14 @@ const AdminBrands = () => {
         }
 
         if (rest.slug) {
-          setOriginalMap((prev) => ({ ...prev, [rest.slug]: serialize(normalizeItem(rest as BrandItem)) }));
+          setOriginalMap((prev) => ({
+            ...prev,
+            [rest.slug]: serialize(normalizeItem(rest as BrandItem)),
+          }));
         }
       }
 
-      if (deletedPaths.length) {
+      if (pendingDeletes.length) {
         const base = import.meta.env.VITE_API_BASE_URL || "";
         const token = await getAccessToken(base);
         const res = await fetch(`${base}/media/delete`, {
@@ -389,7 +480,10 @@ const AdminBrands = () => {
             "Content-Type": "application/json",
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ paths: Array.from(new Set(deletedPaths)), reason: "brand-image-replace" }),
+          body: JSON.stringify({
+            paths: Array.from(new Set(pendingDeletes)),
+            reason: "brand-image-replace",
+          }),
         });
         if (!res.ok) {
           toast.error("Some old media could not be queued for deletion");
@@ -442,7 +536,10 @@ const AdminBrands = () => {
     <AdminLayout
       title="Brand Management"
       description="Manage all partner brands, categories, and their showcase content."
-      navItems={navItems}
+      navItems={navItems.map((item) => ({
+        label: item.name,
+        href: item.href,
+      }))}
       sections={sections}
     >
       {error && (
@@ -458,10 +555,15 @@ const AdminBrands = () => {
         </div>
       )}
 
-      <div id="brands-hero" className="rounded-xl border border-border/60 bg-card/70 p-4 space-y-3">
+      <div
+        id="brands-hero"
+        className="rounded-xl border border-border/60 bg-card/70 p-4 space-y-3"
+      >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">Hero</p>
+            <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground">
+              Hero
+            </p>
             <h3 className="text-lg font-semibold">Brands hero text</h3>
           </div>
           <Button size="sm" onClick={saveHero} disabled={heroSaving}>
@@ -471,24 +573,41 @@ const AdminBrands = () => {
         <div className="grid md:grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-muted-foreground">Badge</label>
-            <Input value={heroBadge} onChange={(e) => setHeroBadge(e.target.value)} />
+            <Input
+              value={heroBadge}
+              onChange={(e) => setHeroBadge(e.target.value)}
+            />
           </div>
           <div>
             <label className="text-xs text-muted-foreground">Title</label>
-            <Input value={heroTitle} onChange={(e) => setHeroTitle(e.target.value)} />
+            <Input
+              value={heroTitle}
+              onChange={(e) => setHeroTitle(e.target.value)}
+            />
           </div>
           <div className="md:col-span-2">
             <label className="text-xs text-muted-foreground">Subheading</label>
-            <Input value={heroSubheading} onChange={(e) => setHeroSubheading(e.target.value)} />
+            <Input
+              value={heroSubheading}
+              onChange={(e) => setHeroSubheading(e.target.value)}
+            />
           </div>
         </div>
       </div>
 
-      <div id="brands" className="rounded-xl border border-border/60 bg-card/70 p-4 flex flex-col gap-3">
+      <div
+        id="brands"
+        className="rounded-xl border border-border/60 bg-card/70 p-4 flex flex-col gap-3"
+      >
         <div className="flex flex-col md:flex-row gap-3 items-start md:items-center">
           <div className="relative w-full md:max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search brands..." className="pl-9" />
+            <Input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search brands..."
+              className="pl-9"
+            />
           </div>
           <Select value={category} onValueChange={(v) => setCategory(v)}>
             <SelectTrigger className="w-[200px]">
@@ -502,7 +621,10 @@ const AdminBrands = () => {
               ))}
             </SelectContent>
           </Select>
-          <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
+          <Select
+            value={String(pageSize)}
+            onValueChange={(v) => setPageSize(Number(v))}
+          >
             <SelectTrigger className="w-[140px]">
               <SelectValue />
             </SelectTrigger>
@@ -534,7 +656,11 @@ const AdminBrands = () => {
               <Save className="w-4 h-4 mr-2" />
               {saving ? "Saving..." : "Save"}
             </Button>
-            <Button variant="outline" onClick={() => loadBrands(page, { category, search })} disabled={loading}>
+            <Button
+              variant="outline"
+              onClick={() => loadBrands(page, { category, search })}
+              disabled={loading}
+            >
               Refresh
             </Button>
           </div>
@@ -546,7 +672,9 @@ const AdminBrands = () => {
               size="sm"
               variant="ghost"
               disabled={page <= 1 || loading}
-              onClick={() => loadBrands(Math.max(1, page - 1), { category, search })}
+              onClick={() =>
+                loadBrands(Math.max(1, page - 1), { category, search })
+              }
             >
               Prev
             </Button>
@@ -564,15 +692,23 @@ const AdminBrands = () => {
 
       <Accordion type="multiple" className="grid gap-4">
         {items.map((item, idx) => (
-          <AccordionItem key={item.slug || idx} value={item.slug || `brand-${idx}`} className="rounded-xl border border-border/70 bg-card/80 px-4">
+          <AccordionItem
+            key={item.slug || idx}
+            value={item.slug || `brand-${idx}`}
+            className="rounded-xl border border-border/70 bg-card/80 px-4"
+          >
             <AccordionTrigger className="py-4 text-left">
               <div className="flex items-center gap-3">
                 <ChevronDown className="w-4 h-4 shrink-0" />
                 <div className="space-y-1">
-                  <div className="font-semibold">{item.name || "New brand"}</div>
+                  <div className="font-semibold">
+                    {item.name || "New brand"}
+                  </div>
                   <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
                     {item.slug && <Badge variant="outline">{item.slug}</Badge>}
-                    {item.category && <Badge variant="secondary">{item.category}</Badge>}
+                    {item.category && (
+                      <Badge variant="secondary">{item.category}</Badge>
+                    )}
                     {item.relationship && <Badge>{item.relationship}</Badge>}
                   </div>
                 </div>
@@ -580,43 +716,91 @@ const AdminBrands = () => {
             </AccordionTrigger>
             <AccordionContent className="pb-4">
               <div className="flex justify-end mb-3">
-                <Button variant="ghost" size="icon" onClick={() => deleteItem(item.slug || "")}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => deleteItem(item.slug || "")}
+                >
                   <Trash2 className="w-4 h-4" />
                 </Button>
               </div>
               <CardContent className="space-y-3 p-0">
                 <div className="grid md:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-muted-foreground">Slug</label>
-                    <Input value={item.slug} onChange={(e) => updateItem(idx, "slug", e.target.value)} placeholder="techvision-labs" />
+                    <label className="text-xs text-muted-foreground">
+                      Slug
+                    </label>
+                    <Input
+                      value={item.slug}
+                      onChange={(e) => updateItem(idx, "slug", e.target.value)}
+                      placeholder="techvision-labs"
+                    />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground">Name</label>
-                    <Input value={item.name} onChange={(e) => updateItem(idx, "name", e.target.value)} placeholder="TechVision Labs" />
+                    <label className="text-xs text-muted-foreground">
+                      Name
+                    </label>
+                    <Input
+                      value={item.name}
+                      onChange={(e) => updateItem(idx, "name", e.target.value)}
+                      placeholder="TechVision Labs"
+                    />
                   </div>
                 </div>
                 <div className="grid md:grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs text-muted-foreground">Logo (text/mark)</label>
-                    <Input value={item.logo} onChange={(e) => updateItem(idx, "logo", e.target.value)} placeholder="TV" />
+                    <label className="text-xs text-muted-foreground">
+                      Logo (text/mark)
+                    </label>
+                    <Input
+                      value={item.logo}
+                      onChange={(e) => updateItem(idx, "logo", e.target.value)}
+                      placeholder="TV"
+                    />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground">Relationship</label>
-                    <Input value={item.relationship} onChange={(e) => updateItem(idx, "relationship", e.target.value)} placeholder="Headline Sponsor" />
+                    <label className="text-xs text-muted-foreground">
+                      Relationship
+                    </label>
+                    <Input
+                      value={item.relationship}
+                      onChange={(e) =>
+                        updateItem(idx, "relationship", e.target.value)
+                      }
+                      placeholder="Headline Sponsor"
+                    />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground">Category</label>
-                    <Input value={item.category} onChange={(e) => updateItem(idx, "category", e.target.value)} placeholder="Technology" />
+                    <label className="text-xs text-muted-foreground">
+                      Category
+                    </label>
+                    <Input
+                      value={item.category}
+                      onChange={(e) =>
+                        updateItem(idx, "category", e.target.value)
+                      }
+                      placeholder="Technology"
+                    />
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <label className="text-xs text-muted-foreground">Image path (auto-filled)</label>
-                    <Button variant="secondary" size="sm" onClick={() => setUploadTarget({ idx, field: "image" })}>
+                    <label className="text-xs text-muted-foreground">
+                      Image path (auto-filled)
+                    </label>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setUploadTarget({ idx, field: "image" })}
+                    >
                       Upload
                     </Button>
                   </div>
-                  <Input value={item.image} readOnly placeholder="Upload to fill automatically" />
+                  <Input
+                    value={item.image}
+                    readOnly
+                    placeholder="Upload to fill automatically"
+                  />
                   <div className="grid md:grid-cols-3 gap-2 mt-2">
                     {(item.variants ?? []).map((variant, vIdx) => (
                       <div key={`${variant.key}-${vIdx}`} className="space-y-1">
@@ -624,13 +808,18 @@ const AdminBrands = () => {
                           <Badge variant="secondary">{variant.key}</Badge>
                           <span>Path</span>
                         </label>
-                        <Input value={variant.path || variant.fileName || ""} readOnly />
+                        <Input
+                          value={variant.path || variant.fileName || ""}
+                          readOnly
+                        />
                       </div>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground">Summary</label>
+                  <label className="text-xs text-muted-foreground">
+                    Summary
+                  </label>
                   <Input
                     value={item.summary || ""}
                     onChange={(e) => updateItem(idx, "summary", e.target.value)}
@@ -639,13 +828,21 @@ const AdminBrands = () => {
                 </div>
                 <div className="grid md:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-muted-foreground">Detail headline</label>
+                    <label className="text-xs text-muted-foreground">
+                      Detail headline
+                    </label>
                     <Input
                       value={item.detail?.headline || ""}
                       onChange={(e) =>
                         setItems((prev) => {
                           const next = [...prev];
-                          next[idx] = { ...next[idx], detail: { ...next[idx].detail, headline: e.target.value } };
+                          next[idx] = {
+                            ...next[idx],
+                            detail: {
+                              ...next[idx].detail,
+                              headline: e.target.value,
+                            },
+                          };
                           return next;
                         })
                       }
@@ -654,33 +851,59 @@ const AdminBrands = () => {
                   </div>
                   <div>
                     <div className="flex items-center justify-between">
-                      <label className="text-xs text-muted-foreground">Detail hero image</label>
-                      <Button variant="secondary" size="sm" onClick={() => setUploadTarget({ idx, field: "hero" })}>
+                      <label className="text-xs text-muted-foreground">
+                        Detail hero image
+                      </label>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setUploadTarget({ idx, field: "hero" })}
+                      >
                         Upload
                       </Button>
                     </div>
-                    <Input value={item.detail?.heroImage || ""} readOnly placeholder="Upload to fill automatically" />
+                    <Input
+                      value={item.detail?.heroImage || ""}
+                      readOnly
+                      placeholder="Upload to fill automatically"
+                    />
                     <div className="grid md:grid-cols-3 gap-2 mt-2">
-                      {(item.detail?.heroVariants ?? []).map((variant, vIdx) => (
-                        <div key={`${variant.key}-${vIdx}`} className="space-y-1">
-                          <label className="text-xs text-muted-foreground flex items-center gap-2">
-                            <Badge variant="secondary">{variant.key}</Badge>
-                            <span>Path</span>
-                          </label>
-                          <Input value={variant.path || variant.fileName || ""} readOnly />
-                        </div>
-                      ))}
+                      {(item.detail?.heroVariants ?? []).map(
+                        (variant, vIdx) => (
+                          <div
+                            key={`${variant.key}-${vIdx}`}
+                            className="space-y-1"
+                          >
+                            <label className="text-xs text-muted-foreground flex items-center gap-2">
+                              <Badge variant="secondary">{variant.key}</Badge>
+                              <span>Path</span>
+                            </label>
+                            <Input
+                              value={variant.path || variant.fileName || ""}
+                              readOnly
+                            />
+                          </div>
+                        ),
+                      )}
                     </div>
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground">Detail summary</label>
+                  <label className="text-xs text-muted-foreground">
+                    Detail summary
+                  </label>
                   <Input
                     value={item.detail?.summary || ""}
                     onChange={(e) =>
                       setItems((prev) => {
                         const next = [...prev];
-                        next[idx] = { ...next[idx], detail: { ...next[idx].detail, summary: e.target.value } };
+                        next[idx] = {
+                          ...next[idx],
+                          detail: {
+                            ...next[idx].detail,
+                            summary: e.target.value,
+                          },
+                        };
                         return next;
                       })
                     }
@@ -688,13 +911,21 @@ const AdminBrands = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground">Pull quote</label>
+                  <label className="text-xs text-muted-foreground">
+                    Pull quote
+                  </label>
                   <Input
                     value={item.detail?.pullQuote || ""}
                     onChange={(e) =>
                       setItems((prev) => {
                         const next = [...prev];
-                        next[idx] = { ...next[idx], detail: { ...next[idx].detail, pullQuote: e.target.value } };
+                        next[idx] = {
+                          ...next[idx],
+                          detail: {
+                            ...next[idx].detail,
+                            pullQuote: e.target.value,
+                          },
+                        };
                         return next;
                       })
                     }
@@ -704,15 +935,38 @@ const AdminBrands = () => {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">Highlights</p>
-                    <Button variant="outline" size="sm" onClick={() => addHighlight(idx)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => addHighlight(idx)}
+                    >
                       <Plus className="w-4 h-4 mr-1" /> Add
                     </Button>
                   </div>
                   {(item.detail?.highlights || []).map((h, hIdx) => (
-                    <div key={hIdx} className="border border-border/60 rounded-xl p-3 space-y-2">
-                      <Input value={h.title} onChange={(e) => updateHighlight(idx, hIdx, "title", e.target.value)} placeholder="Headline" />
-                      <Input value={h.body} onChange={(e) => updateHighlight(idx, hIdx, "body", e.target.value)} placeholder="Body copy" />
-                      <Button variant="ghost" size="sm" onClick={() => removeHighlight(idx, hIdx)}>
+                    <div
+                      key={hIdx}
+                      className="border border-border/60 rounded-xl p-3 space-y-2"
+                    >
+                      <Input
+                        value={h.title}
+                        onChange={(e) =>
+                          updateHighlight(idx, hIdx, "title", e.target.value)
+                        }
+                        placeholder="Headline"
+                      />
+                      <Input
+                        value={h.body}
+                        onChange={(e) =>
+                          updateHighlight(idx, hIdx, "body", e.target.value)
+                        }
+                        placeholder="Body copy"
+                      />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeHighlight(idx, hIdx)}
+                      >
                         <Trash2 className="w-4 h-4 mr-1" /> Remove
                       </Button>
                     </div>
@@ -721,16 +975,39 @@ const AdminBrands = () => {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">Metrics</p>
-                    <Button variant="outline" size="sm" onClick={() => addMetric(idx)}>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => addMetric(idx)}
+                    >
                       <Plus className="w-4 h-4 mr-1" /> Add
                     </Button>
                   </div>
                   {(item.detail?.metrics || []).map((m, mIdx) => (
-                    <div key={mIdx} className="grid md:grid-cols-2 gap-2 items-center">
-                      <Input value={m.label} onChange={(e) => updateMetric(idx, mIdx, "label", e.target.value)} placeholder="Metric label" />
+                    <div
+                      key={mIdx}
+                      className="grid md:grid-cols-2 gap-2 items-center"
+                    >
+                      <Input
+                        value={m.label}
+                        onChange={(e) =>
+                          updateMetric(idx, mIdx, "label", e.target.value)
+                        }
+                        placeholder="Metric label"
+                      />
                       <div className="flex gap-2">
-                        <Input value={m.value} onChange={(e) => updateMetric(idx, mIdx, "value", e.target.value)} placeholder="Metric value" />
-                        <Button variant="ghost" size="icon" onClick={() => removeMetric(idx, mIdx)}>
+                        <Input
+                          value={m.value}
+                          onChange={(e) =>
+                            updateMetric(idx, mIdx, "value", e.target.value)
+                          }
+                          placeholder="Metric value"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeMetric(idx, mIdx)}
+                        >
                           <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
@@ -738,13 +1015,21 @@ const AdminBrands = () => {
                   ))}
                 </div>
                 <div>
-                  <label className="text-xs text-muted-foreground">Impact description</label>
+                  <label className="text-xs text-muted-foreground">
+                    Impact description
+                  </label>
                   <Input
                     value={item.detail?.impactDescription || ""}
                     onChange={(e) =>
                       setItems((prev) => {
                         const next = [...prev];
-                        next[idx] = { ...next[idx], detail: { ...next[idx].detail, impactDescription: e.target.value } };
+                        next[idx] = {
+                          ...next[idx],
+                          detail: {
+                            ...next[idx].detail,
+                            impactDescription: e.target.value,
+                          },
+                        };
                         return next;
                       })
                     }
@@ -753,13 +1038,21 @@ const AdminBrands = () => {
                 </div>
                 <div className="grid md:grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-muted-foreground">CTA label</label>
+                    <label className="text-xs text-muted-foreground">
+                      CTA label
+                    </label>
                     <Input
                       value={item.detail?.ctaLabel || ""}
                       onChange={(e) =>
                         setItems((prev) => {
                           const next = [...prev];
-                          next[idx] = { ...next[idx], detail: { ...next[idx].detail, ctaLabel: e.target.value } };
+                          next[idx] = {
+                            ...next[idx],
+                            detail: {
+                              ...next[idx].detail,
+                              ctaLabel: e.target.value,
+                            },
+                          };
                           return next;
                         })
                       }
@@ -767,13 +1060,21 @@ const AdminBrands = () => {
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-muted-foreground">CTA href</label>
+                    <label className="text-xs text-muted-foreground">
+                      CTA href
+                    </label>
                     <Input
                       value={item.detail?.ctaHref || ""}
                       onChange={(e) =>
                         setItems((prev) => {
                           const next = [...prev];
-                          next[idx] = { ...next[idx], detail: { ...next[idx].detail, ctaHref: e.target.value } };
+                          next[idx] = {
+                            ...next[idx],
+                            detail: {
+                              ...next[idx].detail,
+                              ctaHref: e.target.value,
+                            },
+                          };
                           return next;
                         })
                       }
@@ -785,7 +1086,11 @@ const AdminBrands = () => {
             </AccordionContent>
           </AccordionItem>
         ))}
-        {!items.length && <p className="text-sm text-muted-foreground">No brands yet. Add your first brand to begin.</p>}
+        {!items.length && (
+          <p className="text-sm text-muted-foreground">
+            No brands yet. Add your first brand to begin.
+          </p>
+        )}
       </Accordion>
 
       <MediaUploadModal
@@ -796,10 +1101,17 @@ const AdminBrands = () => {
         onUploaded={(result: MediaUploadResult) => {
           if (uploadTarget === null) return;
           const { idx, field } = uploadTarget;
-          const prevVariants = field === "image" ? items[idx]?.variants || [] : items[idx]?.detail?.heroVariants || [];
-          const prevPaths = prevVariants.map((v) => v.path || v.fileName).filter(Boolean) as string[];
-          const mainVariant = result.variants.find((v) => v.key === "main") ?? result.variants[0];
-          const imagePath = mainVariant?.path || mainVariant?.fileName || items[idx]?.image;
+          const prevVariants =
+            field === "image"
+              ? items[idx]?.variants || []
+              : items[idx]?.detail?.heroVariants || [];
+          const prevPaths = prevVariants
+            .map((v) => v.path || v.fileName)
+            .filter(Boolean) as string[];
+          const mainVariant =
+            result.variants.find((v) => v.key === "main") ?? result.variants[0];
+          const imagePath =
+            mainVariant?.path || mainVariant?.fileName || items[idx]?.image;
           if (field === "image") {
             updateItem(idx, "image", imagePath);
             setItems((prev) => {
@@ -810,7 +1122,14 @@ const AdminBrands = () => {
           } else {
             setItems((prev) => {
               const next = [...prev];
-              next[idx] = { ...next[idx], detail: { ...next[idx].detail, heroImage: imagePath, heroVariants: result.variants } };
+              next[idx] = {
+                ...next[idx],
+                detail: {
+                  ...next[idx].detail,
+                  heroImage: imagePath,
+                  heroVariants: result.variants,
+                },
+              };
               return next;
             });
           }

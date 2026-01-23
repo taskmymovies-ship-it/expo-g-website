@@ -70,9 +70,9 @@ type BrandsResponse = {
 type CelebItem = {
   name: string;
   title: string;
-  quote: string;
+  quote?: string;
   image: string;
-  badge: string;
+  badge?: string;
 };
 type CelebResponse = {
   eyebrow: string;
@@ -531,11 +531,34 @@ const NewHome = () => {
         setReviewData((prev) => prev);
       }
     };
+
+    // const fetchBrands = async () => {
+    //   try {
+    //     const res = await fetch(`${base}/brands/highlights`);
+    //     if (!res.ok) throw new Error("Brands fetch failed");
+    //     const data = (await res.json()) as BrandsResponse;
+    //     setBrandsData({
+    //       eyebrow: data.eyebrow || "Trustworthy Leaders",
+    //       title: data.title || "Brands that trust ICE Exhibitions",
+    //       description:
+    //         data.description ||
+    //         "Logos and stories from partners who have built standout moments on our platform.",
+    //       ctaLabel: data.ctaLabel || "View all partner brands",
+    //       ctaHref: data.ctaHref || "/brands",
+    //       brands: data.brands?.length ? data.brands : fallbackBrands,
+    //     });
+    //   } catch {
+    //     setBrandsData((prev) => prev);
+    //   }
+    // };
+
     const fetchBrands = async () => {
       try {
         const res = await fetch(`${base}/brands/highlights`);
         if (!res.ok) throw new Error("Brands fetch failed");
+
         const data = (await res.json()) as BrandsResponse;
+
         setBrandsData({
           eyebrow: data.eyebrow || "Trustworthy Leaders",
           title: data.title || "Brands that trust ICE Exhibitions",
@@ -544,12 +567,14 @@ const NewHome = () => {
             "Logos and stories from partners who have built standout moments on our platform.",
           ctaLabel: data.ctaLabel || "View all partner brands",
           ctaHref: data.ctaHref || "/brands",
-          brands: data.brands?.length ? data.brands : fallbackBrands,
+          brands: data.brands || [], // ✅ THIS is the key fix
         });
       } catch {
+        // only fallback if API actually fails
         setBrandsData((prev) => prev);
       }
     };
+
     const fetchCelebs = async () => {
       try {
         const res = await fetch(`${base}/celebrities`);
