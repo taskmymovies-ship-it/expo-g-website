@@ -93,7 +93,7 @@ const AdminBrandEditor = () => {
         description: hero?.subheading || "",
         ctaLabel: highlights?.ctaLabel || "",
         ctaHref: highlights?.ctaHref || "/brands",
-        brands: merged, // ✅ full objects, but only highlighted
+        brands: merged,
       });
     } finally {
       setLoading(false);
