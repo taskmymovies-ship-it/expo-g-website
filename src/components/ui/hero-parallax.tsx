@@ -21,9 +21,19 @@ export const HeroParallax = ({
   heroHighlight = "Expo Legacy",
   heroSubtitle = "A decade of immersive expos, captured in over 1,000 moments. Where brands connect, innovate, and inspire. Explore our visual archive of unforgettable experiences.",
 }: HeroParallaxProps) => {
-  const firstRow = products.slice(0, 5);
-  const secondRow = products.slice(5, 10);
-  const thirdRow = products.slice(10, 15);
+  const safeProducts =
+    products.length >= 15
+      ? products
+      : [...products, ...products, ...products].slice(0, 15);
+
+  const firstRow = safeProducts.slice(0, 5);
+  const secondRow = safeProducts.slice(5, 10);
+  const thirdRow = safeProducts.slice(10, 15);
+
+  // const firstRow = products.slice(0, 5);
+  // const secondRow = products.slice(5, 10);
+  // const thirdRow = products.slice(10, 15);
+  // console.log("Products:", products);
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
