@@ -87,10 +87,18 @@ const AdminBrandEditor = () => {
       const heroRes = await fetch(`${base}/brands/hero`);
       const hero = heroRes.ok ? await heroRes.json() : {};
 
+      // setData({
+      //   eyebrow: hero?.badge || "",
+      //   title: hero?.title || "",
+      //   description: hero?.subheading || "",
+      //   ctaLabel: highlights?.ctaLabel || "",
+      //   ctaHref: highlights?.ctaHref || "/brands",
+      //   brands: merged,
+      // });
       setData({
-        eyebrow: hero?.badge || "",
-        title: hero?.title || "",
-        description: hero?.subheading || "",
+        eyebrow: highlights?.eyebrow || "",
+        title: highlights?.title || "",
+        description: highlights?.description || "",
         ctaLabel: highlights?.ctaLabel || "",
         ctaHref: highlights?.ctaHref || "/brands",
         brands: merged,
@@ -192,15 +200,6 @@ const AdminBrandEditor = () => {
       ...data,
       brands: data.brands.filter((_, i) => i !== idx),
     });
-
-    // Also delete from backend
-    if (brand.slug) {
-      const headers = getAuthHeaders();
-      await fetch(`${base}/brands/${brand.slug}`, {
-        method: "DELETE",
-        headers,
-      });
-    }
   };
 
   useEffect(() => {
@@ -240,85 +239,11 @@ const AdminBrandEditor = () => {
       <BrandEditor
         data={data}
         onChange={setData}
-        // onAddBrand={() =>
-        //   setData({
-        //     ...data,
-        //     brands: [
-        //       ...(data.brands || []),
-        //       {
-        //         slug: "",
-        //         name: "",
-        //         logo: "",
-        //         relationship: "",
-        //         category: "",
-        //         image: "",
-        //       },
-        //     ],
-        //   })
-        // }
-
-        // onAddBrand={() =>
-        //   setData({
-        //     ...data,
-        //     brands: [
-        //       ...(data.brands || []),
-        //       {
-        //         slug: "",
-        //         name: "",
-        //         logo: "",
-        //         relationship: "",
-        //         category: "",
-        //         image: "",
-        //         summary: "",
-        //         detail: {
-        //           headline: "",
-        //           summary: "",
-        //           heroImage: "",
-        //           highlights: [],
-        //           metrics: [],
-        //           pullQuote: "",
-        //           ctaLabel: "",
-        //           ctaHref: "",
-        //           impactDescription: "",
-        //         },
-        //       },
-        //     ],
-        //   })}
-
-        // onAddBrand={() =>
-        //   setData({
-        //     ...data,
-        //     brands: [
-        //       ...(data.brands || []),
-        //       {
-        //         slug: "",
-        //         name: "",
-        //         logo: "",
-        //         relationship: "",
-        //         category: "",
-        //         image: "",
-        //         summary: "",
-        //         detail: {
-        //           headline: "",
-        //           summary: "",
-        //           heroImage: "",
-        //           highlights: [],
-        //           metrics: [],
-        //           pullQuote: "",
-        //           ctaLabel: "",
-        //           ctaHref: "",
-        //           impactDescription: "",
-        //         },
-        //       },
-        //     ],
-        //   })
-        // }
-
         onAddBrand={() =>
-          setData((prev) => ({
-            ...prev,
+          setData({
+            ...data,
             brands: [
-              ...(prev.brands || []),
+              ...(data.brands || []),
               {
                 slug: "",
                 name: "",
@@ -326,24 +251,40 @@ const AdminBrandEditor = () => {
                 relationship: "",
                 category: "",
                 image: "",
-                variants: [],
-                summary: "",
-                detail: {
-                  headline: "",
-                  summary: "",
-                  heroImage: "",
-                  heroVariants: [],
-                  highlights: [],
-                  metrics: [],
-                  pullQuote: "",
-                  ctaLabel: "",
-                  ctaHref: "",
-                  impactDescription: "",
-                },
               },
             ],
-          }))
+          })
         }
+        // onAddBrand={() =>
+        //   setData((prev) => ({
+        //     ...prev,
+        //     brands: [
+        //       ...(prev.brands || []),
+        //       {
+        //         slug: "",
+        //         name: "",
+        //         logo: "",
+        //         relationship: "",
+        //         category: "",
+        //         image: "",
+        //         variants: [],
+        //         summary: "",
+        //         detail: {
+        //           headline: "",
+        //           summary: "",
+        //           heroImage: "",
+        //           heroVariants: [],
+        //           highlights: [],
+        //           metrics: [],
+        //           pullQuote: "",
+        //           ctaLabel: "",
+        //           ctaHref: "",
+        //           impactDescription: "",
+        //         },
+        //       },
+        //     ],
+        //   }))
+        // }
         onRemoveBrand={(idx) => deleteBrand(idx)}
         onSave={() => save()}
         onRestore={() => restore()}

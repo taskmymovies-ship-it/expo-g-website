@@ -9,7 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import NotFound from "./NotFound";
 import { ArrowLeft, ArrowUpRight } from "lucide-react";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 import { Loader2 } from "lucide-react";
 
 const mediaBase = import.meta.env.VITE_MEDIA_BASE_URL || "";
@@ -31,10 +38,20 @@ const resolveVariant = (item: BrandItem, keys: string[]) => {
 
 const resolveHero = (story?: BrandDetailStory) => {
   if (!story) return { primary: "", fallback: "" };
-  const main = story.heroVariants?.find((v) => v.key === "main") ?? story.heroVariants?.[0];
+  const main =
+    story.heroVariants?.find((v) => v.key === "main") ??
+    story.heroVariants?.[0];
   const thumb = story.heroVariants?.find((v) => v.key === "thumb");
-  const primary = main?.path ? toUrl(main.path) : main?.fileName ? toUrl(main.fileName) : story.heroImage ?? "";
-  const fallback = thumb?.path ? toUrl(thumb.path) : thumb?.fileName ? toUrl(thumb.fileName) : primary;
+  const primary = main?.path
+    ? toUrl(main.path)
+    : main?.fileName
+      ? toUrl(main.fileName)
+      : (story.heroImage ?? "");
+  const fallback = thumb?.path
+    ? toUrl(thumb.path)
+    : thumb?.fileName
+      ? toUrl(thumb.fileName)
+      : primary;
   return { primary, fallback };
 };
 
@@ -44,7 +61,9 @@ const normalizeBrand = (item: BrandItem): BrandItem => ({
   detail: item.detail
     ? {
         ...item.detail,
-        heroVariants: item.detail.heroVariants ?? [{ key: "main", path: item.detail.heroImage }],
+        heroVariants: item.detail.heroVariants ?? [
+          { key: "main", path: item.detail.heroImage },
+        ],
       }
     : undefined,
 });
@@ -57,6 +76,11 @@ type BrandDetailStory = {
   highlights?: { title: string; body: string }[];
   metrics?: { label: string; value: string }[];
   pullQuote?: string;
+
+  // REQUIRED (used in JSX)
+  ctaLabel?: string;
+  ctaHref?: string;
+  impactDescription?: string;
 };
 
 type BrandItem = {
@@ -96,7 +120,9 @@ const BrandDetail = () => {
         const detail = normalized.detail || fallbackStory || null;
         setStory(detail);
       } catch {
-        const normalizedFallback = fallbackBrand ? normalizeBrand(fallbackBrand) : null;
+        const normalizedFallback = fallbackBrand
+          ? normalizeBrand(fallbackBrand)
+          : null;
         setBrand(normalizedFallback);
         setStory(normalizedFallback?.detail || fallbackStory);
       } finally {
@@ -108,9 +134,15 @@ const BrandDetail = () => {
         const res = await fetch(`${base}/brands?page=1&pageSize=50`);
         if (!res.ok) throw new Error("List fetch failed");
         const data = await res.json();
-        setMoreBrands((data.data || []).map(normalizeBrand).filter((b: BrandItem) => b.slug !== slug));
+        setMoreBrands(
+          (data.data || [])
+            .map(normalizeBrand)
+            .filter((b: BrandItem) => b.slug !== slug),
+        );
       } catch {
-        setMoreBrands(brandHighlights.map(normalizeBrand).filter((b) => b.slug !== slug));
+        setMoreBrands(
+          brandHighlights.map(normalizeBrand).filter((b) => b.slug !== slug),
+        );
       }
     };
     load();
@@ -152,9 +184,16 @@ const BrandDetail = () => {
       <section className="relative min-h-[70vh] flex items-end pb-16 pt-28 md:pt-36 overflow-hidden">
         <BackgroundBeams className="z-0" />
         <motion.img
-          src={resolveHero(story).primary || resolveVariant(brand, ["main", "medium", "thumb"]) || brand.image}
+          src={
+            resolveHero(story).primary ||
+            resolveVariant(brand, ["main", "medium", "thumb"]) ||
+            brand.image
+          }
           onError={(e) => {
-            const fallback = resolveHero(story).fallback || resolveVariant(brand, ["thumb"]) || brand.image;
+            const fallback =
+              resolveHero(story).fallback ||
+              resolveVariant(brand, ["thumb"]) ||
+              brand.image;
             if (fallback && e.currentTarget.src !== fallback) {
               e.currentTarget.src = fallback;
             }
@@ -180,7 +219,9 @@ const BrandDetail = () => {
             <h1 className="text-4xl md:text-6xl font-display font-bold leading-tight">
               {story.headline || brand.name}
             </h1>
-            <p className="text-lg md:text-xl text-muted-foreground">{story.summary || brand.summary}</p>
+            <p className="text-lg md:text-xl text-muted-foreground">
+              {story.summary || brand.summary}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Badge variant="outline" className="text-base px-4 py-2">
@@ -210,10 +251,18 @@ const BrandDetail = () => {
                   viewport={{ once: true, margin: "-50px" }}
                   className="grid md:grid-cols-5 gap-6 md:gap-10 items-start"
                 >
-                  <div className={`md:col-span-2 space-y-3 ${isEven ? "" : "md:order-last"}`}>
-                    <div className="text-sm uppercase tracking-[0.2em] text-primary">Chapter {index + 1}</div>
-                    <h2 className="text-2xl md:text-3xl font-display font-semibold">{section.title}</h2>
-                    <p className="text-muted-foreground leading-relaxed">{section.body}</p>
+                  <div
+                    className={`md:col-span-2 space-y-3 ${isEven ? "" : "md:order-last"}`}
+                  >
+                    <div className="text-sm uppercase tracking-[0.2em] text-primary">
+                      Chapter {index + 1}
+                    </div>
+                    <h2 className="text-2xl md:text-3xl font-display font-semibold">
+                      {section.title}
+                    </h2>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {section.body}
+                    </p>
                   </div>
                   <div className="md:col-span-3">
                     <motion.div
@@ -244,8 +293,13 @@ const BrandDetail = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 {(story.metrics || []).map((metric) => (
-                  <div key={metric.label} className="rounded-xl border border-border/60 p-4 bg-card/70">
-                    <div className="text-2xl font-display font-semibold">{metric.value}</div>
+                  <div
+                    key={metric.label}
+                    className="rounded-xl border border-border/60 p-4 bg-card/70"
+                  >
+                    <div className="text-2xl font-display font-semibold">
+                      {metric.value}
+                    </div>
                     <div className="text-xs uppercase tracking-wide text-muted-foreground mt-1">
                       {metric.label}
                     </div>
@@ -264,16 +318,21 @@ const BrandDetail = () => {
               </Button>
             </div>
 
-
-
             <div className="rounded-2xl border border-border p-6 bg-card/80 space-y-4 shadow-lg shadow-primary/5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs uppercase tracking-[0.3em] text-primary/80">More partners</p>
-                  <h3 className="text-lg font-display font-semibold">Explore more brand stories</h3>
+                  <p className="text-xs uppercase tracking-[0.3em] text-primary/80">
+                    More partners
+                  </p>
+                  <h3 className="text-lg font-display font-semibold">
+                    Explore more brand stories
+                  </h3>
                 </div>
               </div>
-              <Carousel opts={{ align: "start", slidesToScroll: 1 }} setApi={setCarouselApi}>
+              <Carousel
+                opts={{ align: "start", slidesToScroll: 1 }}
+                setApi={setCarouselApi}
+              >
                 <CarouselContent>
                   {moreBrands.map((item) => (
                     <CarouselItem key={item.slug} className="">
@@ -298,11 +357,14 @@ const BrandDetail = () => {
                             <Badge variant="outline">{item.relationship}</Badge>
                           </div>
                           <div className="flex items-center justify-between">
-                            <h4 className="font-display font-semibold text-base">{item.name}</h4>
+                            <h4 className="font-display font-semibold text-base">
+                              {item.name}
+                            </h4>
                             <ArrowUpRight className="w-4 h-4 text-primary" />
                           </div>
                           <p className="text-xs text-muted-foreground line-clamp-2">
-                            {item.summary || "Discover how this partner shaped their showcase."}
+                            {item.summary ||
+                              "Discover how this partner shaped their showcase."}
                           </p>
                         </div>
                       </Link>
@@ -315,9 +377,6 @@ const BrandDetail = () => {
                 </div>
               </Carousel>
             </div>
-
-
-            
           </div>
         </div>
       </section>

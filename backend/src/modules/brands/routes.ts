@@ -518,12 +518,21 @@ export default async function brandsRoutes(app: FastifyInstance) {
     "/brands/highlights/restore",
     { preHandler: [app.authenticate] },
     async () => {
+      // const empty = {
+      //   eyebrow: "",
+      //   title: "",
+      //   description: "",
+      //   brands: [] as any[],
+      // };
       const empty = {
         eyebrow: "",
         title: "",
         description: "",
-        brands: [] as any[],
+        ctaLabel: "",
+        ctaHref: "",
+        brands: [],
       };
+
       const db = await getDb();
       const col = db.collection("brands_highlights");
       await col.updateOne(

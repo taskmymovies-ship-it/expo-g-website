@@ -12,6 +12,36 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Trash2, RotateCcw, Save } from "lucide-react";
 
+// export type BrandItem = {
+//   slug: string;
+//   name: string;
+//   logo: string;
+//   relationship: string;
+//   category: string;
+//   image: string;
+//   summary?: string;
+//   detail?: {
+//     headline?: string;
+//     summary?: string;
+//     heroImage?: string;
+
+//     highlights?: {
+//       title: string;
+//       body: string;
+//     }[];
+
+//     metrics?: {
+//       label: string;
+//       value: string;
+//     }[];
+
+//     pullQuote?: string;
+//     ctaLabel?: string;
+//     ctaHref?: string;
+//     impactDescription?: string;
+//   };
+// };
+
 export type BrandItem = {
   slug: string;
   name: string;
@@ -19,27 +49,6 @@ export type BrandItem = {
   relationship: string;
   category: string;
   image: string;
-  summary?: string;
-  detail?: {
-    headline?: string;
-    summary?: string;
-    heroImage?: string;
-
-    highlights?: {
-      title: string;
-      body: string;
-    }[];
-
-    metrics?: {
-      label: string;
-      value: string;
-    }[];
-
-    pullQuote?: string;
-    ctaLabel?: string;
-    ctaHref?: string;
-    impactDescription?: string;
-  };
 };
 
 export type BrandsData = {
@@ -168,7 +177,7 @@ const BrandEditor = ({
           </Card>
         </TabsContent>
 
-        {/* <TabsContent value="brands-list" className="mt-4">
+        <TabsContent value="brands-list" className="mt-4">
           <Card className="bg-card/80 border-border/70">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -272,9 +281,9 @@ const BrandEditor = ({
               </div>
             </CardContent>
           </Card>
-        </TabsContent> */}
+        </TabsContent>
 
-        <TabsContent value="brands-list" className="mt-4">
+        {/* <TabsContent value="brands-list" className="mt-4">
           <Card className="bg-card/80 border-border/70">
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
@@ -291,7 +300,7 @@ const BrandEditor = ({
                   className="grid md:grid-cols-3 gap-3 items-end border border-border/60 rounded-xl p-3"
                 >
                   {/* Basic Fields */}
-                  <div>
+        {/* <div>
                     <label className="text-xs text-muted-foreground mb-1 block">
                       Name
                     </label>
@@ -359,7 +368,7 @@ const BrandEditor = ({
                   </div>
 
                   {/* Advanced Detail Fields */}
-                  <div>
+        {/* <div>
                     <label className="text-xs text-muted-foreground mb-1 block">
                       Headline
                     </label>
@@ -373,8 +382,8 @@ const BrandEditor = ({
                       }
                       placeholder="Detail Headline"
                     />
-                  </div>
-                  <div>
+                  </div> */}
+        {/* <div>
                     <label className="text-xs text-muted-foreground mb-1 block">
                       Summary
                     </label>
@@ -388,8 +397,8 @@ const BrandEditor = ({
                       }
                       placeholder="Detail Summary"
                     />
-                  </div>
-                  <div>
+                  </div> */}
+        {/* <div>
                     <label className="text-xs text-muted-foreground mb-1 block">
                       Hero Image URL
                     </label>
@@ -403,10 +412,10 @@ const BrandEditor = ({
                       }
                       placeholder="https://example.com/hero.jpg"
                     />
-                  </div>
+                  </div> */}
 
-                  {/* Highlights Array */}
-                  <div className="md:col-span-3 space-y-2">
+        {/* Highlights Array */}
+        {/* <div className="md:col-span-3 space-y-2">
                     <label className="text-xs text-muted-foreground mb-1 block">
                       Highlights
                     </label>
@@ -454,10 +463,10 @@ const BrandEditor = ({
                     >
                       Add Highlight
                     </Button>
-                  </div>
+                  </div> */}
 
-                  {/* Metrics Array */}
-                  <div className="md:col-span-3 space-y-2">
+        {/* Metrics Array */}
+        {/* <div className="md:col-span-3 space-y-2">
                     <label className="text-xs text-muted-foreground mb-1 block">
                       Metrics
                     </label>
@@ -505,10 +514,10 @@ const BrandEditor = ({
                     >
                       Add Metric
                     </Button>
-                  </div>
+                  </div> */}
 
-                  {/* Pull Quote */}
-                  <div className="md:col-span-3">
+        {/* Pull Quote */}
+        {/* <div className="md:col-span-3">
                     <label className="text-xs text-muted-foreground mb-1 block">
                       Pull Quote
                     </label>
@@ -522,10 +531,10 @@ const BrandEditor = ({
                       }
                       placeholder="Pull Quote"
                     />
-                  </div>
+                  </div> */}
 
-                  {/* CTA Label / Href */}
-                  <div className="md:col-span-3 grid md:grid-cols-2 gap-3">
+        {/* CTA Label / Href */}
+        {/* <div className="md:col-span-3 grid md:grid-cols-2 gap-3">
                     <div>
                       <label className="text-xs text-muted-foreground mb-1 block">
                         CTA Label
@@ -556,10 +565,10 @@ const BrandEditor = ({
                         placeholder="/brands/brand-slug"
                       />
                     </div>
-                  </div>
+                  </div> */}
 
-                  {/* Impact Description */}
-                  <div className="md:col-span-3">
+        {/* Impact Description */}
+        {/* <div className="md:col-span-3">
                     <label className="text-xs text-muted-foreground mb-1 block">
                       Impact Description
                     </label>
@@ -573,10 +582,10 @@ const BrandEditor = ({
                       }
                       placeholder="Impact description"
                     />
-                  </div>
+                  </div> */}
 
-                  {/* Remove Brand Button */}
-                  <div className="flex justify-end md:col-span-3">
+        {/* Remove Brand Button */}
+        {/* <div className="flex justify-end md:col-span-3">
                     <Button
                       variant="ghost"
                       size="icon"
@@ -584,11 +593,11 @@ const BrandEditor = ({
                     >
                       <Trash2 className="w-4 h-4" />
                     </Button>
-                  </div>
-                </div>
-              ))}
+                  </div> */}
+        {/* </div>
+              ))} */}
 
-              {!data.brands.length && (
+        {/* {!data.brands.length && (
                 <p className="text-sm text-muted-foreground">No brands yet.</p>
               )}
 
@@ -599,7 +608,7 @@ const BrandEditor = ({
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
+        </TabsContent> */}
 
         <TabsContent value="brands-preview" className="mt-4">
           <Card className="bg-card/70 border-border/60">
