@@ -76,7 +76,7 @@ export const HeroParallax = ({
         }}
         className=""
       >
-        <motion.div className="flex flex-row-reverse gap-10 md:gap-20 mb-10 md:mb-20">
+        <motion.div className="flex flex-row-reverse gap-24 mb-10 md:mb-20">
           {firstRow.map((product) => (
             <ProductCard
               product={product}
@@ -85,7 +85,7 @@ export const HeroParallax = ({
             />
           ))}
         </motion.div>
-        <motion.div className="flex flex-row gap-10 mb-10 md:mb-20 space-x-20 md:space-x-20">
+        <motion.div className="flex flex-row gap-24 mb-10 md:mb-20 space-x-0 md:space-x-0">
           {secondRow.map((product) => (
             <ProductCard
               product={product}
@@ -94,7 +94,7 @@ export const HeroParallax = ({
             />
           ))}
         </motion.div>
-        <motion.div className="flex flex-row-reverse space-x-reverse space-x-20 md:space-x-20">
+        <motion.div className="flex flex-row-reverse gap-24 space-x-reverse space-x-20 md:space-x-0">
           {thirdRow.map((product) => (
             <ProductCard
               product={product}
