@@ -38,7 +38,7 @@ interface BuyerEditorProps {
   onAdd: () => void;
   onRemove: (idx: number) => void;
   onSave: () => void;
-  onRestore: () => void;
+  // onRestore: () => void;
   saving: boolean;
   loading: boolean;
 }
@@ -49,7 +49,7 @@ const BuyerEditor = ({
   onAdd,
   onRemove,
   onSave,
-  onRestore,
+  // onRestore,
   saving,
   loading,
 }: BuyerEditorProps) => {
@@ -339,14 +339,14 @@ const BuyerEditor = ({
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap justify-end gap-3">
-              <Button
+              {/* <Button
                 variant="outline"
                 onClick={onRestore}
                 disabled={saving || loading}
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Restore defaults
-              </Button>
+              </Button> */}
               <Button onClick={onSave} disabled={saving || loading}>
                 <Save className="w-4 h-4 mr-2" />
                 {saving ? "Saving..." : "Save buyers"}

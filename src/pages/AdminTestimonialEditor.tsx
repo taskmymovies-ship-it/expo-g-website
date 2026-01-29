@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { adminNavLinks } from "@/data/admin";
-import TestimonialsEditor, { type TestimonialsData } from "@/components/admin/sections/TestimonialsEditor";
+import TestimonialsEditor, {
+  type TestimonialsData,
+} from "@/components/admin/sections/TestimonialsEditor";
 
 const defaultData: TestimonialsData = {
-  hero: { badge: "Testimonials", title: "What our partners say", intro: "Snapshots from brands, buyers, and founders." },
+  hero: {
+    badge: "Testimonials",
+    title: "What our partners say",
+    intro: "Snapshots from brands, buyers, and founders.",
+  },
   testimonials: [],
 };
 
@@ -16,16 +22,16 @@ const AdminTestimonialEditor = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const getAccessToken = async (base: string) => {
-    const token = localStorage.getItem("admin_access_token");
-    if (token) return token;
-    return refreshAccessToken(base);
-  };
+  // const getAccessToken = async (base: string) => {
+  //   const token = localStorage.getItem("admin_access_token");
+  //   if (token) return token;
+  //   return refreshAccessToken(base);
+  // };
 
-const getAuthHeaders = () => {
-  const token = localStorage.getItem("admin_access_token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem("admin_access_token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
 
   const load = async () => {
     setLoading(true);
@@ -81,60 +87,68 @@ const getAuthHeaders = () => {
     }
   };
 
+  // const restore = async () => {
+  //   setSaving(true);
+  //   setError("");
+  //   setSuccess("");
 
-const restore = async () => {
-  setSaving(true);
-  setError("");
-  setSuccess("");
+  //   try {
+  //     const token = await getAccessToken();
+  //     if (!token) throw new Error("Not authenticated.");
 
-  try {
-    const token = await getAccessToken();
-    if (!token) throw new Error("Not authenticated.");
+  //     const res = await fetch(`${base}/testimonials/restore`, {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //     });
 
-    const res = await fetch(`${base}/testimonials/restore`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  //     if (res.status === 401) {
+  //       const refreshed = await refreshAccessToken();
+  //       if (!refreshed) throw new Error("Session expired. Please login again.");
 
-    if (res.status === 401) {
-      const refreshed = await refreshAccessToken();
-      if (!refreshed) throw new Error("Session expired. Please login again.");
+  //       const retry = await fetch(`${base}/testimonials/restore`, {
+  //         method: "POST",
+  //         headers: {
+  //           Authorization: `Bearer ${refreshed}`,
+  //         },
+  //       });
 
-      const retry = await fetch(`${base}/testimonials/restore`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${refreshed}`,
-        },
-      });
+  //       if (!retry.ok) throw new Error("Restore failed");
+  //       const payload = (await retry.json()) as Payload;
+  //       setData(payload);
+  //     } else {
+  //       if (!res.ok) throw new Error("Restore failed");
+  //       const payload = (await res.json()) as Payload;
+  //       setData(payload);
+  //     }
 
-      if (!retry.ok) throw new Error("Restore failed");
-      const payload = (await retry.json()) as Payload;
-      setData(payload);
-    } else {
-      if (!res.ok) throw new Error("Restore failed");
-      const payload = (await res.json()) as Payload;
-      setData(payload);
-    }
+  //     setSuccess("Testimonials restored");
+  //   } catch (err: any) {
+  //     setError(err.message || "Unable to restore testimonials");
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
 
-    setSuccess("Testimonials restored");
-  } catch (err: any) {
-    setError(err.message || "Unable to restore testimonials");
-  } finally {
-    setSaving(false);
-  }
-};
-  
   const addTestimonial = () => {
-    const id = typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
-      ? crypto.randomUUID()
-      : `testimonial-${Date.now()}`;
+    const id =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `testimonial-${Date.now()}`;
     setData({
       ...data,
       testimonials: [
         ...data.testimonials,
-        { id, name: "", role: "", company: "", image: "", rating: 5, quote: "" },
+        {
+          id,
+          name: "",
+          role: "",
+          company: "",
+          image: "",
+          rating: 5,
+          quote: "",
+        },
       ],
     });
   };
@@ -143,11 +157,15 @@ const restore = async () => {
     <AdminLayout
       title="Testimonials (Editor only)"
       description="Quick editor for the home-page testimonials rail."
-      navItems={adminNavLinks}
+      navItems={adminNavLinks.map((item) => ({
+        label: item.name,
+        href: item.href,
+      }))}
       sections={[{ id: "testimonials", label: "Testimonials" }]}
     >
       <div className="text-sm text-muted-foreground mb-4">
-        Saves write directly to the testimonials block. Restore resets to defaults.
+        Saves write directly to the testimonials block. Restore resets to
+        defaults.
       </div>
       {error && <div className="text-sm text-destructive mb-2">{error}</div>}
       {success && <div className="text-sm text-green-600 mb-2">{success}</div>}
@@ -155,9 +173,14 @@ const restore = async () => {
         data={data}
         onChange={setData}
         onAdd={addTestimonial}
-        onRemove={(idx) => setData({ ...data, testimonials: data.testimonials.filter((_, i) => i !== idx) })}
+        onRemove={(idx) =>
+          setData({
+            ...data,
+            testimonials: data.testimonials.filter((_, i) => i !== idx),
+          })
+        }
         onSave={save}
-        onRestore={restore}
+        // onRestore={restore}
         saving={saving}
         loading={loading}
       />

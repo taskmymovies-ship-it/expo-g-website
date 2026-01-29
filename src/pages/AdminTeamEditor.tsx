@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { adminNavLinks } from "@/data/admin";
-import TeamEditor, { type TeamData } from "@/components/admin/sections/TeamEditor";
+import TeamEditor, {
+  type TeamData,
+} from "@/components/admin/sections/TeamEditor";
 
 const emptyTeam: TeamData = {
   eyebrow: "",
@@ -20,11 +22,9 @@ const AdminTeamEditor = () => {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const getAuthHeaders = () => {
-  const token = localStorage.getItem("admin_access_token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
-
-  
+    const token = localStorage.getItem("admin_access_token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+  };
 
   const load = async () => {
     setLoading(true);
@@ -34,7 +34,7 @@ const AdminTeamEditor = () => {
         headers: {
           ...getAuthHeaders(),
         },
-    });
+      });
 
       if (!res.ok) throw new Error("Failed to load team");
       const payload = (await res.json()) as TeamData;
@@ -83,48 +83,51 @@ const AdminTeamEditor = () => {
     }
   };
 
+  // const restore = async () => {
+  //   setSaving(true);
+  //   setError("");
+  //   setSuccess("");
+  //   try {
+  //     const res = await fetch(`${base}/teams/restore`, {
+  //       method: "POST",
+  //       headers: {
+  //         ...getAuthHeaders(),
+  //       },
+  //     });
 
-  const restore = async () => {
-    setSaving(true);
-    setError("");
-    setSuccess("");
-    try {
-      const res = await fetch(`${base}/teams/restore`, {
-        method: "POST",
-        headers: {
-          ...getAuthHeaders(),
-        },
-      });
+  //     if (!res.ok) throw new Error("Restore failed");
 
-      if (!res.ok) throw new Error("Restore failed");
+  //     const payload = await res.json();
+  //     setData({
+  //       eyebrow: payload.eyebrow || "",
+  //       title: payload.title || "",
+  //       description: payload.description || "",
+  //       ctaLabel: payload.ctaLabel || "",
+  //       ctaHref: payload.ctaHref || "/teams",
+  //       team: payload.team || [],
+  //     });
 
-      const payload = await res.json();
-      setData({
-        eyebrow: payload.eyebrow || "",
-        title: payload.title || "",
-        description: payload.description || "",
-        ctaLabel: payload.ctaLabel || "",
-        ctaHref: payload.ctaHref || "/teams",
-        team: payload.team || [],
-      });
-
-      setSuccess("Defaults restored");
-    } catch (err: any) {
-      setError(err.message || "Unable to restore defaults");
-    } finally {
-      setSaving(false);
-    }
-  };
+  //     setSuccess("Defaults restored");
+  //   } catch (err: any) {
+  //     setError(err.message || "Unable to restore defaults");
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
 
   return (
     <AdminLayout
       title="Team (Editor only)"
       description="Quick edit for the home-page team section. Use the full Team management page for deeper controls."
-      navItems={adminNavLinks}
+      navItems={adminNavLinks.map((item) => ({
+        label: item.name,
+        href: item.href,
+      }))}
       sections={[{ id: "team", label: "Team" }]}
     >
       <div className="text-sm text-muted-foreground mb-4">
-        Save writes directly to the team block used on the home page. Restore resets to empty/defaults.
+        Save writes directly to the team block used on the home page. Restore
+        resets to empty/defaults.
       </div>
       {error && <div className="text-sm text-destructive mb-2">{error}</div>}
       {success && <div className="text-sm text-green-600 mb-2">{success}</div>}
@@ -148,9 +151,11 @@ const AdminTeamEditor = () => {
             ],
           })
         }
-        onRemoveMember={(idx) => setData({ ...data, team: data.team.filter((_, i) => i !== idx) })}
+        onRemoveMember={(idx) =>
+          setData({ ...data, team: data.team.filter((_, i) => i !== idx) })
+        }
         onSave={save}
-        onRestore={restore}
+        // onRestore={restore}
         saving={saving}
         loading={loading}
       />

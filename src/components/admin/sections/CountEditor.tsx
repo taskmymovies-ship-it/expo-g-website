@@ -1,4 +1,10 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,7 +22,7 @@ interface CountEditorProps {
   onAdd: () => void;
   onRemove: (idx: number) => void;
   onSave: () => void;
-  onRestore: () => void;
+  // onRestore: () => void;
   saving: boolean;
   loading: boolean;
 }
@@ -27,22 +33,28 @@ const CountEditor = ({
   onAdd,
   onRemove,
   onSave,
-  onRestore,
+  // onRestore,
   saving,
   loading,
 }: CountEditorProps) => {
   const updateStat = (idx: number, key: keyof CountStat, value: string) => {
     const next = [...data.stats];
-    next[idx] = { ...next[idx], [key]: key === "value" ? Number(value) : value };
+    next[idx] = {
+      ...next[idx],
+      [key]: key === "value" ? Number(value) : value,
+    };
     onChange({ stats: next });
   };
 
   return (
     <div id="counts" className="pt-10 space-y-4">
       <div className="text-center space-y-2">
-        <h2 className="text-2xl md:text-3xl font-display font-semibold">Counting Section Editor</h2>
+        <h2 className="text-2xl md:text-3xl font-display font-semibold">
+          Counting Section Editor
+        </h2>
         <p className="text-muted-foreground text-sm">
-          Manage the “20M+ buyers | 10,000+ brands | 10 cities | 30 years” stats strip.
+          Manage the “20M+ buyers | 10,000+ brands | 10 cities | 30 years” stats
+          strip.
         </p>
       </div>
       <Tabs defaultValue="counts-list" className="w-full">
@@ -56,7 +68,9 @@ const CountEditor = ({
           <Card className="bg-card/80 border-border/70">
             <CardHeader>
               <CardTitle>Stats</CardTitle>
-              <CardDescription>Numbers shown in the counting section.</CardDescription>
+              <CardDescription>
+                Numbers shown in the counting section.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               {data.stats.map((stat, idx) => (
@@ -78,13 +92,19 @@ const CountEditor = ({
                     placeholder="buyers"
                   />
                   <div className="md:col-span-3 flex justify-end">
-                    <Button variant="ghost" size="icon" onClick={() => onRemove(idx)}>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onRemove(idx)}
+                    >
                       <Trash2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>
               ))}
-              {!data.stats.length && <p className="text-sm text-muted-foreground">No stats yet.</p>}
+              {!data.stats.length && (
+                <p className="text-sm text-muted-foreground">No stats yet.</p>
+              )}
               <div className="flex justify-end">
                 <Button variant="outline" onClick={onAdd}>
                   <Plus className="w-4 h-4 mr-2" />
@@ -99,17 +119,24 @@ const CountEditor = ({
           <Card className="bg-card/70 border-border/60">
             <CardHeader>
               <CardTitle>Preview</CardTitle>
-              <CardDescription>Static preview of the counting strip.</CardDescription>
+              <CardDescription>
+                Static preview of the counting strip.
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {data.stats.map((stat, idx) => (
-                  <div key={idx} className="rounded-xl border border-border/60 bg-card/80 p-3 text-center">
+                  <div
+                    key={idx}
+                    className="rounded-xl border border-border/60 bg-card/80 p-3 text-center"
+                  >
                     <div className="text-xl font-display font-semibold">
                       {stat.value}
                       {stat.suffix}
                     </div>
-                    <div className="text-xs text-muted-foreground">{stat.label}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {stat.label}
+                    </div>
                   </div>
                 ))}
                 {!data.stats.length && (
@@ -126,13 +153,15 @@ const CountEditor = ({
           <Card className="bg-card/80 border-border/70">
             <CardHeader>
               <CardTitle>Actions</CardTitle>
-              <CardDescription>Restore defaults or publish counts changes.</CardDescription>
+              <CardDescription>
+                Restore defaults or publish counts changes.
+              </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap justify-end gap-3">
-              <Button variant="outline" onClick={onRestore} disabled={saving || loading}>
+              {/* <Button variant="outline" onClick={onRestore} disabled={saving || loading}>
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Restore defaults
-              </Button>
+              </Button> */}
               <Button onClick={onSave} disabled={saving || loading}>
                 <Save className="w-4 h-4 mr-2" />
                 {saving ? "Saving..." : "Save counts"}

@@ -4,49 +4,62 @@ const defaultCoFounders = {
   key: "default",
   eyebrow: "Review the moment",
   title: "Co-founding team of ICE 2.0 (IGE & IGN)",
-  description: "Builders behind the hybrid platform—linking on-ground showcases with digital broadcast networks.",
+  description:
+    "Builders behind the hybrid platform—linking on-ground showcases with digital broadcast networks.",
   ctaLabel: "See all co-founders",
   ctaHref: "/cofounders",
   cofounders: [
     {
-      name: "Priyanshi Jha",
-      track: "IGE & IGN",
-      title: "Co-Founder, ICE 2.0",
-      focus: "Product + Program",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=600&h=800&fit=crop",
-      highlight: "Bridges on-ground playbooks with digital programming for both IGE and IGN.",
-      href: "/cofounders/priyanshi-jha",
-      social: { linkedin: "https://linkedin.com/in/priyanshijha" },
-    },
-    {
-      name: "Sanjay Shah",
-      track: "IGE & IGN",
-      title: "Co-Founder, ICE 2.0",
-      focus: "Growth + Partnerships",
-      image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=600&h=800&fit=crop",
-      highlight: "Scaled the hybrid network—brand sponsors, city partners, and streaming collaborators.",
-      href: "/cofounders/sanjay-shah",
-      social: { linkedin: "https://linkedin.com/in/sanjayshah" },
-    },
-    {
-      name: "Rohit Kumar",
+      id: "cofounder-ige-1",
+      name: "Ritika Iyer",
       track: "IGE",
       title: "Co-Founder, IGE",
-      focus: "Live Streams + Creator Ops",
-      image: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=600&h=800&fit=crop",
-      highlight: "Built the broadcast lanes for IGE with creator pipelines and live ops.",
-      href: "/cofounders/rohit-kumar",
-      social: { linkedin: "https://linkedin.com/in/rohitkumar" },
+      focus: "Immersive production, XR, broadcast",
+      image:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop&q=80",
+      highlight:
+        "Built the XR-first run-of-show for IGE with multi-cam streaming and media pods.",
+      href: "/cofounders/cofounder-ige-1",
+      social: { linkedin: "https://linkedin.com/in/ritika-iyer" },
     },
     {
-      name: "Ritu Anand",
+      id: "cofounder-ign-1",
+      name: "Arjun Nair",
       track: "IGN",
       title: "Co-Founder, IGN",
-      focus: "Network + Community",
-      image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=600&h=800&fit=crop",
-      highlight: "Grew IGN’s community channels and buyer programs for digital-first drops.",
-      href: "/cofounders/ritu-anand",
-      social: { linkedin: "https://linkedin.com/in/rituanand" },
+      focus: "Network, partnerships, data",
+      image:
+        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=800&auto=format&fit=crop&q=80",
+      highlight:
+        "Built IGN’s partner graph and sponsorship ladder for hybrid editions.",
+      href: "/cofounders/cofounder-ign-1",
+      social: { linkedin: "https://linkedin.com/in/arjun-nair" },
+    },
+    {
+      id: "cofounder-ige-ops",
+      name: "Kabir Shah",
+      track: "IGE",
+      title: "CTO, IGE",
+      focus: "Infra, telemetry, automation",
+      image:
+        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&auto=format&fit=crop&q=80",
+      highlight:
+        "Instrumented XR stages with telemetry and automated health checks.",
+      href: "/cofounders/cofounder-ige-ops",
+      social: { linkedin: "https://linkedin.com/in/kabirshah" },
+    },
+    {
+      id: "cofounder-ign-ops",
+      name: "Meera Kulkarni",
+      track: "IGN",
+      title: "Head of Operations, IGN",
+      focus: "Attendee journey, routing, lounges",
+      image:
+        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&auto=format&fit=crop&q=80",
+      highlight:
+        "Designed attendee routing for IGN with premium lounges and signals.",
+      href: "/cofounders/cofounder-ign-ops",
+      social: { linkedin: "https://linkedin.com/in/meerakulkarni" },
     },
   ],
 };
@@ -55,7 +68,11 @@ const run = async () => {
   try {
     const db = await getDb();
     const col = db.collection("cofounders");
-    await col.updateOne({ key: "default" }, { $set: defaultCoFounders }, { upsert: true });
+    await col.updateOne(
+      { key: "default" },
+      { $set: defaultCoFounders },
+      { upsert: true },
+    );
     console.log("Co-founders seed applied.");
   } catch (err) {
     console.error(err);

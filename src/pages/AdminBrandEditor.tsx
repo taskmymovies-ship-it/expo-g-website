@@ -169,28 +169,28 @@ const AdminBrandEditor = () => {
     }
   };
 
-  const restore = async () => {
-    setLoading(true);
-    try {
-      const headers = getAuthHeaders();
+  // const restore = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const headers = getAuthHeaders();
 
-      const res = await fetch(`${base}/brands/highlights/restore`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({}),
-      });
+  //     const res = await fetch(`${base}/brands/highlights/restore`, {
+  //       method: "POST",
+  //       headers,
+  //       body: JSON.stringify({}),
+  //     });
 
-      if (!res.ok) throw new Error("Restore failed");
+  //     if (!res.ok) throw new Error("Restore failed");
 
-      await load();
-      showNotice("success", "Restored successfully");
-    } catch (err) {
-      console.error(err);
-      showNotice("error", "Restore failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  //     await load();
+  //     showNotice("success", "Restored successfully");
+  //   } catch (err) {
+  //     console.error(err);
+  //     showNotice("error", "Restore failed");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const deleteBrand = async (idx) => {
     const brand = data.brands[idx];
@@ -287,7 +287,7 @@ const AdminBrandEditor = () => {
         // }
         onRemoveBrand={(idx) => deleteBrand(idx)}
         onSave={() => save()}
-        onRestore={() => restore()}
+        // onRestore={() => restore()}
         saving={false}
         loading={loading}
       />

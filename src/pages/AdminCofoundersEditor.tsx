@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { adminNavLinks } from "@/data/admin";
-import CoFoundersEditor, { type CoFoundersData } from "@/components/admin/sections/CoFoundersEditor";
+import CoFoundersEditor, {
+  type CoFoundersData,
+} from "@/components/admin/sections/CoFoundersEditor";
 
 const emptyCofounders: CoFoundersData = {
   eyebrow: "",
@@ -19,16 +21,15 @@ const AdminCofoundersEditor = () => {
   const [saving, setSaving] = useState(false);
   type NoticeType = "success" | "error";
 
-const [notice, setNotice] = useState<{
-  type: NoticeType;
-  message: string;
-} | null>(null);
+  const [notice, setNotice] = useState<{
+    type: NoticeType;
+    message: string;
+  } | null>(null);
 
-const showNotice = (type: NoticeType, message: string) => {
-  setNotice({ type, message });
-  setTimeout(() => setNotice(null), 3000);
-};
-
+  const showNotice = (type: NoticeType, message: string) => {
+    setNotice({ type, message });
+    setTimeout(() => setNotice(null), 3000);
+  };
 
   const refreshAccessToken = async () => {
     const refreshToken = localStorage.getItem("admin_refresh_token");
@@ -63,7 +64,11 @@ const showNotice = (type: NoticeType, message: string) => {
       const res = await fetch(`${base}/cofounders`);
       if (!res.ok) throw new Error("Failed to load co-founders");
       const payload = await res.json();
-      setData({ ...emptyCofounders, ...(payload || {}), cofounders: payload?.cofounders || [] });
+      setData({
+        ...emptyCofounders,
+        ...(payload || {}),
+        cofounders: payload?.cofounders || [],
+      });
     } catch {
       setData(emptyCofounders);
     } finally {
@@ -77,84 +82,87 @@ const showNotice = (type: NoticeType, message: string) => {
   }, []);
 
   const save = async () => {
-  setSaving(true);
-  try {
-    const token = await getAccessToken();
-    if (!token) throw new Error("Not authenticated");
+    setSaving(true);
+    try {
+      const token = await getAccessToken();
+      if (!token) throw new Error("Not authenticated");
 
-    const attempt = async (authToken: string | null) =>
-      fetch(`${base}/cofounders`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
-        },
-        body: JSON.stringify(data),
-      });
+      const attempt = async (authToken: string | null) =>
+        fetch(`${base}/cofounders`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            ...(authToken ? { Authorization: `Bearer ${authToken}` } : {}),
+          },
+          body: JSON.stringify(data),
+        });
 
-    let res = await attempt(token);
+      let res = await attempt(token);
 
-    if (res && res.status === 401) {
-      const refreshed = await refreshAccessToken();
-      res = await attempt(refreshed);
+      if (res && res.status === 401) {
+        const refreshed = await refreshAccessToken();
+        res = await attempt(refreshed);
+      }
+
+      if (!res || !res.ok) throw new Error("Save failed");
+
+      showNotice("success", "Saved successfully");
+    } catch (err) {
+      console.error(err);
+      showNotice("error", "Save failed");
+    } finally {
+      setSaving(false);
     }
+  };
 
-    if (!res || !res.ok) throw new Error("Save failed");
+  // const restore = async () => {
+  //   setSaving(true);
+  //   try {
+  //     const token = await getAccessToken();
+  //     if (!token) throw new Error("Not authenticated");
 
-    showNotice("success", "Saved successfully");
-  } catch (err) {
-    console.error(err);
-    showNotice("error", "Save failed");
-  } finally {
-    setSaving(false);
-  }
-};
+  //     const res = await fetch(`${base}/cofounders/restore`, {
+  //       method: "POST",
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
 
-  const restore = async () => {
-  setSaving(true);
-  try {
-    const token = await getAccessToken();
-    if (!token) throw new Error("Not authenticated");
+  //     if (!res.ok) throw new Error("Restore failed");
 
-    const res = await fetch(`${base}/cofounders/restore`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!res.ok) throw new Error("Restore failed");
-
-    await load();
-    showNotice("success", "Restored successfully");
-  } catch (err) {
-    console.error(err);
-    showNotice("error", "Restore failed");
-  } finally {
-    setSaving(false);
-  }
-};
+  //     await load();
+  //     showNotice("success", "Restored successfully");
+  //   } catch (err) {
+  //     console.error(err);
+  //     showNotice("error", "Restore failed");
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
 
   return (
     <AdminLayout
       title="Co-founders Spotlight"
       description="Manage co-founders content for ICE 2.0 (IGE & IGN)."
-      navItems={adminNavLinks}
+      navItems={adminNavLinks.map((item) => ({
+        label: item.name,
+        href: item.href,
+      }))}
       sections={[{ id: "cofounders", label: "Co-founders" }]}
     >
       {notice && (
-  <div
-    className={`mb-6 rounded-lg px-4 py-3 text-sm flex items-center gap-2
+        <div
+          className={`mb-6 rounded-lg px-4 py-3 text-sm flex items-center gap-2
       ${
         notice.type === "success"
           ? "bg-blue-50 text-blue-700"
           : "bg-red-50 text-red-700"
       }`}
-  >
-    <span className="font-medium">
-      {notice.type === "success" ? "✓" : "⚠"}
-    </span>
-    {notice.message}
-  </div>
-)}
+        >
+          <span className="font-medium">
+            {notice.type === "success" ? "✓" : "⚠"}
+          </span>
+          {notice.message}
+        </div>
+      )}
 
       <CoFoundersEditor
         data={data}
@@ -162,7 +170,18 @@ const showNotice = (type: NoticeType, message: string) => {
         onAdd={() =>
           setData((prev) => ({
             ...prev,
-            cofounders: [...(prev.cofounders || []), { name: "", track: "IGE", title: "", focus: "", image: "", highlight: "", href: "" }],
+            cofounders: [
+              ...(prev.cofounders || []),
+              {
+                name: "",
+                track: "IGE",
+                title: "",
+                focus: "",
+                image: "",
+                highlight: "",
+                href: "",
+              },
+            ],
           }))
         }
         onRemove={(idx) =>
@@ -172,7 +191,7 @@ const showNotice = (type: NoticeType, message: string) => {
           }))
         }
         onSave={save}
-        onRestore={restore}
+        // onRestore={restore}
         saving={saving}
         loading={loading}
       />
