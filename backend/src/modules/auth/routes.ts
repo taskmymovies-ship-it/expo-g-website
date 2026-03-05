@@ -47,11 +47,14 @@ export default async function authRoutes(app: FastifyInstance) {
 
       request.log.info({ username }, "auth.login success");
 
-      const accessToken = app.jwt.sign({ sub: username, role: "admin" }, { expiresIn: "15m" } as any);
+      const accessToken = app.jwt.sign(
+        { sub: username, role: "admin" },
+        { expiresIn: env.jwtAccessTtl } as any
+      );
 
       const refreshToken = (app.jwt as any).sign(
         { sub: username, role: "admin", type: "refresh" },
-        { expiresIn: "30d", secret: env.jwtRefreshSecret }
+        { expiresIn: env.jwtRefreshTtl, secret: env.jwtRefreshSecret }
       );
 
       return { accessToken, refreshToken };
@@ -83,7 +86,10 @@ export default async function authRoutes(app: FastifyInstance) {
       try {
         const payload = (app.jwt as any).verify(parse.data.refreshToken, { secret: env.jwtRefreshSecret }) as { sub: string };
         request.log.info({ sub: payload.sub }, "auth.refresh success");
-        const accessToken = app.jwt.sign({ sub: payload.sub, role: "admin" }, { expiresIn: "15m" } as any);
+        const accessToken = app.jwt.sign(
+          { sub: payload.sub, role: "admin" },
+          { expiresIn: env.jwtAccessTtl } as any
+        );
         return { accessToken };
       } catch {
         request.log.warn({ reason: "invalid_refresh_token" }, "auth.refresh failed");

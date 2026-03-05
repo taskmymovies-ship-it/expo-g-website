@@ -31,6 +31,7 @@ type MediaDoc = {
   variants: MediaVariant[];
   keepOriginal: boolean;
   status: "ready" | "pendingDelete" | "deleted";
+  storageDriver?: "local" | "bunny";
   createdAt: Date;
   deletedAt?: Date;
 };
@@ -85,7 +86,47 @@ const ensureDir = async (dir: string) => {
   await fs.mkdir(dir, { recursive: true });
 };
 
-const writeVariant = async (params: {
+const buildBunnyStorageHost = () => {
+  const region = (env.bunnyStorageRegion || "").trim();
+  return region ? `${region}.storage.bunnycdn.com` : "storage.bunnycdn.com";
+};
+
+const encodePathSegments = (value: string) =>
+  value
+    .split("/")
+    .filter(Boolean)
+    .map((segment) => encodeURIComponent(segment))
+    .join("/");
+
+const uploadToBunny = async (objectKey: string, body: Buffer, contentType: string) => {
+  const zone = (env.bunnyStorageZone || "").trim();
+  const password = (env.bunnyStoragePassword || "").trim();
+  if (!zone || !password) {
+    throw new Error("Bunny storage is not configured");
+  }
+
+  const host = buildBunnyStorageHost();
+  const key = objectKey.replace(/^\/+/, "");
+  const encodedZone = encodeURIComponent(zone);
+  const encodedKey = encodePathSegments(key);
+  const url = `https://${host}/${encodedZone}/${encodedKey}`;
+  const res = await fetch(url, {
+    method: "PUT",
+    headers: {
+      AccessKey: password,
+      "Content-Type": contentType,
+    },
+    body,
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    throw new Error(`Bunny upload failed (${res.status}): ${text || res.statusText}`);
+  }
+};
+
+const buildPublicPath = (objectKey: string) => objectKey.replace(/^\/+/, "");
+
+const buildVariantBuffer = async (params: {
   buffer: Buffer;
   variant: z.infer<typeof variantInputSchema>;
   baseName: string;
@@ -93,11 +134,7 @@ const writeVariant = async (params: {
 }) => {
   const { buffer, variant, baseName, datePath } = params;
   const fileName = `${baseName}-${variant.key}.${variant.format}`;
-  const targetDir = path.join(env.mediaStoragePath, datePath);
-  const targetPath = path.join(targetDir, fileName);
-  const publicPath = path.posix.join(datePath, fileName);
-
-  await ensureDir(targetDir);
+  const publicPath = buildPublicPath(path.posix.join(datePath, fileName));
 
   let pipeline = sharp(buffer);
   if (variant.width || variant.height) {
@@ -109,9 +146,12 @@ const writeVariant = async (params: {
   }
 
   const quality = variant.quality ?? env.mediaWebpQuality;
-  const info = await pipeline.toFormat(variant.format as keyof sharp.FormatEnum, { quality }).toFile(targetPath);
+  const { data, info } = await pipeline
+    .toFormat(variant.format as keyof sharp.FormatEnum, { quality })
+    .toBuffer({ resolveWithObject: true });
 
   return {
+    data,
     key: variant.key,
     format: variant.format,
     width: info.width ?? variant.width,
@@ -119,8 +159,7 @@ const writeVariant = async (params: {
     size: info.size,
     fileName,
     publicPath,
-    path: targetPath,
-  } satisfies MediaVariant;
+  };
 };
 
 export default async function mediaRoutes(app: FastifyInstance) {
@@ -239,27 +278,59 @@ export default async function mediaRoutes(app: FastifyInstance) {
     const keepOriginal = parsedConfig.data.keepOriginal ?? storedConfig?.keepOriginal ?? env.mediaKeepOriginal;
 
     const writtenVariants: MediaVariant[] = [];
+    const storageDriver = env.mediaDriver;
 
     for (const variant of variants) {
-      const saved = await writeVariant({ buffer, variant, baseName, datePath });
-      writtenVariants.push(saved);
+      const built = await buildVariantBuffer({ buffer, variant, baseName, datePath });
+      if (storageDriver === "bunny") {
+        await uploadToBunny(built.publicPath, built.data, `image/${built.format}`);
+        writtenVariants.push({
+          key: built.key,
+          format: built.format,
+          width: built.width,
+          height: built.height,
+          size: built.size,
+          fileName: built.fileName,
+          publicPath: built.publicPath,
+          path: built.publicPath,
+        });
+      } else {
+        const targetDir = path.join(env.mediaStoragePath, datePath);
+        const targetPath = path.join(targetDir, built.fileName);
+        await ensureDir(targetDir);
+        await fs.writeFile(targetPath, built.data);
+        writtenVariants.push({
+          key: built.key,
+          format: built.format,
+          width: built.width,
+          height: built.height,
+          size: built.size,
+          fileName: built.fileName,
+          publicPath: built.publicPath,
+          path: targetPath,
+        });
+      }
     }
 
     if (keepOriginal) {
-      const targetDir = path.join(env.mediaStoragePath, datePath);
       const ext = path.extname(file.filename) || ".bin";
       const originalName = `${baseName}-original${ext}`;
-      const targetPath = path.join(targetDir, originalName);
-      const publicPath = path.posix.join(datePath, originalName);
-      await ensureDir(targetDir);
-      await fs.writeFile(targetPath, buffer);
+      const publicPath = buildPublicPath(path.posix.join(datePath, originalName));
+      if (storageDriver === "bunny") {
+        await uploadToBunny(publicPath, buffer, file.mimetype || "application/octet-stream");
+      } else {
+        const targetDir = path.join(env.mediaStoragePath, datePath);
+        const targetPath = path.join(targetDir, originalName);
+        await ensureDir(targetDir);
+        await fs.writeFile(targetPath, buffer);
+      }
       writtenVariants.push({
         key: "original",
         format: ext.replace(".", "") || file.mimetype,
         size: buffer.length,
         fileName: originalName,
         publicPath,
-        path: targetPath,
+        path: storageDriver === "bunny" ? publicPath : path.join(env.mediaStoragePath, datePath, originalName),
       });
     }
 
@@ -271,6 +342,7 @@ export default async function mediaRoutes(app: FastifyInstance) {
       size: buffer.length,
       variants: writtenVariants,
       keepOriginal,
+      storageDriver,
       status: "ready",
       createdAt: new Date(),
     });
@@ -370,7 +442,7 @@ export default async function mediaRoutes(app: FastifyInstance) {
     await col.updateOne({ _id: new ObjectId(id) }, { $set: { status: "pendingDelete", deletedAt: new Date() } });
 
     const paths = (media.variants ?? []).map((v) => v.path).filter(Boolean);
-    await mediaDeleteQueue.add("delete", { id, paths });
+    await mediaDeleteQueue.add("delete", { id, paths, driver: media.storageDriver || env.mediaDriver });
 
     return reply.code(202).send({ id, status: "pendingDelete" });
   });
@@ -387,7 +459,11 @@ export default async function mediaRoutes(app: FastifyInstance) {
       return reply.code(400).send({ message: "No paths to delete" });
     }
 
-    await mediaDeleteQueue.add("delete-paths", { paths: sanitized, reason: parsed.data.reason ?? "manual" });
+    await mediaDeleteQueue.add("delete-paths", {
+      paths: sanitized,
+      reason: parsed.data.reason ?? "manual",
+      driver: env.mediaDriver,
+    });
     return reply.code(202).send({ queued: true, count: sanitized.length });
   });
 }
